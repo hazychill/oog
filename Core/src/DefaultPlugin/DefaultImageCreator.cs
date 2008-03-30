@@ -29,7 +29,8 @@ namespace Oog.Plugin {
           ".png",
           ".gif",
           ".bmp",
-          ".ico"
+          ".ico",
+          ".tif"
           };
       }
     }
