@@ -7,6 +7,7 @@ SRCS = \
 	$(DIR_SRC)\EmptyExtractor.cs \
 	$(DIR_SRC)\ZipExtractor.cs \
 	$(DIR_SRC)\ZipExtractorFactory.cs \
+	$(DIR_SRC)\ZipImageCreator.cs \
 
 RESOURCES = \
 	/resource:$(DIR_SRC)\Oog.Plugin.ZipExtractorFactory.resources \
@@ -39,7 +40,3 @@ ICSharpCode.SharpZipLib.dll : $(DIR_LIB)\ICSharpCode.SharpZipLib.dll
 clean :
 	del *.dll
 	del *.pdb
-
-# OogZip : ZipExtractor.cs ZipExtractorFactory.cs EmptyExtractor.cs
-# 	csc.exe /target:library /out:OogZip.dll /r:OogPlugin.dll /r:ICSharpCode.SharpZipLib.dll /res:Oog.Plugin.ZipExtractorFactory.resources ZipExtractor.cs ZipExtractorFactory.cs EmptyExtractor.cs
-# 	copy OogZip.dll ..\..\
