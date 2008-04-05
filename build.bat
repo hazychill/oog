@@ -27,6 +27,11 @@ nmake
 popd .
 
 pushd .
+cd Plugins\Text\build
+nmake
+popd .
+
+pushd .
 cd Plugins\SpiWrapper\Util\build
 nmake
 popd .
