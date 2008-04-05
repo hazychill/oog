@@ -22,6 +22,11 @@ nmake
 popd .
 
 pushd .
+cd Plugins\XacRett\build
+nmake
+popd .
+
+pushd .
 cd Plugins\SpiWrapper\Util\build
 nmake
 popd .
