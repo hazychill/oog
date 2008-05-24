@@ -31,7 +31,7 @@ namespace Oog.Plugin {
 
         public string[] GetNames() {
             if (names == null) {
-                names = new string[zipFile.Size];
+                names = new string[zipFile.Count];
                 int i = 0;
                 foreach (ZipEntry entry in zipFile) {
                     names[i] = entry.Name;
