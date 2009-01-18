@@ -10,6 +10,7 @@ DIR_SRC_TREEVIEW = $(DIR_SRC)\TreeView
 DIR_SRC_VIEWER = $(DIR_SRC)\Viewer
 
 SRC_MAIN = \
+	$(DIR_SRC)\AssemblyInfo.cs \
 	$(DIR_SRC)\SettingsForm.cs \
 	$(DIR_SRC)\InterpolationModeConverter.cs \
 	$(DIR_SRC)\MainForm.cs \

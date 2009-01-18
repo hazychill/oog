@@ -110,10 +110,13 @@ namespace Oog.Viewer {
       return !(x == y);
     }
     public override bool Equals(object o) {
-      if (o is FullScreenViewerSettings) {
-        return (this == (FullScreenViewerSettings)o);
+      FullScreenViewerSettings settings = o as FullScreenViewerSettings;
+      if (settings != null) {
+        return (this == settings);
       }
-      return false;
+      else {
+        return false;
+      }
     }
     public override int GetHashCode() {
       return interpolationMode.GetHashCode() + Resizer.GetHashCode() + backColor.GetHashCode();

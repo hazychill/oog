@@ -186,6 +186,11 @@ namespace Oog {
 #region IDisposable Members
 
     public void Dispose() {
+      Dispose(true);
+      GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing) {
       font.Dispose();
       nameBrush.Dispose();
       framePen.Dispose();
