@@ -371,6 +371,12 @@ namespace Oog {
         thumbnailViewer1.Focus();
         e.Handled = true;
         break;
+      case Keys.L:
+        if (e.Alt == false && e.Control == true) {
+          selectedPathTextBox.Focus();
+          e.Handled = true;
+        }
+        break;
       }
     }
 
@@ -420,6 +426,12 @@ namespace Oog {
       case Keys.Enter:
         ShowViewer();
         e.Handled = true;
+        break;
+      case Keys.L:
+        if (e.Alt == false && e.Control == true) {
+          selectedPathTextBox.Focus();
+          e.Handled = true;
+        }
         break;
       }
     }
