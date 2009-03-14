@@ -19,6 +19,7 @@ namespace Oog.Viewer {
     Point start;
     Point anchor;
 
+    bool keyDownThenMouseMove = false;
 
     private void OnLoad(object sender, EventArgs e) {
       contextMenuStrip1.Show();
@@ -237,7 +238,15 @@ namespace Oog.Viewer {
       }
       onMouseUp(sender, e);
     }
-    void OnMouseMove(object sender, MouseEventArgs e) { onMouseMove(sender, e); }
+    void OnMouseMove(object sender, MouseEventArgs e) {
+      if (keyDownThenMouseMove == true) {
+        keyDownThenMouseMove = false;
+      }
+      else {
+        ShowCursor();
+      }
+      onMouseMove(sender, e);
+    }
 
     void DoNothing(object sender, MouseEventArgs e) { }
 
@@ -266,6 +275,9 @@ namespace Oog.Viewer {
     }
 
     private void OnKeyDown(object sender, KeyEventArgs e) {
+      HideCursor();
+      keyDownThenMouseMove = true;
+
       MethodInvoker handlerFunc;
       if (keyEventMap.TryGetValue(e.KeyCode, out handlerFunc)) {
         handlerFunc();

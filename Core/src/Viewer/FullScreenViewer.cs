@@ -15,6 +15,8 @@ namespace Oog.Viewer {
     private Image errorImage;
     private Dictionary<Keys, MethodInvoker> keyEventMap;
 
+    private bool cursorVisible;
+
     public FullScreenViewer() {
       InitializeComponent();
       InitializeSettings();
@@ -46,6 +48,7 @@ namespace Oog.Viewer {
       currentIndex = -1;
 
       this.FormClosed += delegate {
+        ShowCursor();
         try {
           picture.Image.Dispose();
           lookAheadImage.Dispose();
@@ -57,6 +60,8 @@ namespace Oog.Viewer {
         }
         catch {}
       };
+
+      cursorVisible = true;
     }
 
     public void Reset(IExtractor extractor, Dictionary<string, IImageCreator> imageCreators, string[] imageNames, int index) {
@@ -118,6 +123,20 @@ namespace Oog.Viewer {
 
     private void ExitViewer(object sender, EventArgs e) {
       this.Close();
+    }
+
+    private void HideCursor() {
+      if (cursorVisible == true) {
+        Cursor.Hide();
+        cursorVisible = false;
+      }
+    }
+
+    private void ShowCursor() {
+      if (cursorVisible == false) {
+        Cursor.Show();
+        cursorVisible = true;
+      }
     }
   }
 }
