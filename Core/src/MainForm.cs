@@ -71,6 +71,7 @@ namespace Oog {
 
       InitializePlugins();
 
+      directoryTreeView.TreeViewNodeSorter = new OogTreeNodeComparer();
       directoryTreeView.ExtractorFactories = extractorFactories;
       directoryTreeView.RefreshTree();
       SelectNode(directoryTreeView.Nodes[0].FullPath);

@@ -37,13 +37,11 @@ namespace Oog {
       this.Nodes.Clear();
       Array.ForEach(Environment.GetLogicalDrives(), delegate(string drive) {
         if (Directory.Exists(drive)) {
-          TreeNode node = new TreeNode();
+          TreeNode node = new OogTreeNode();
           node.Text = drive.TrimEnd('\\');
           node.ImageIndex = 0;
           this.Nodes.Add(node);
 
-          //test
-          //SetChildNodes(node);
           FindChildNode(node);
         }
       });
@@ -134,7 +132,7 @@ namespace Oog {
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    private struct WIN32_FIND_DATA {
+      private struct WIN32_FIND_DATA {
       public uint     dwFileAttributes; // 属性
       public FILETIME ftCreateTime; // 作成日時
       public FILETIME ftLastAccessTime; // 最終アクセス日時
@@ -150,7 +148,7 @@ namespace Oog {
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct FILETIME {
+      public struct FILETIME {
       public uint dwLowDateTime;
       public uint dwHighDateTime;
     }
@@ -166,15 +164,14 @@ namespace Oog {
       string find = string.Concat(node.FullPath, "\\*");
       foreach (string s in GetFiles(find)) {
         if (s.EndsWith("\\")) {
-          node.Nodes.Add(new TreeNode());
+          node.Nodes.Add(new OogTreeNode());
           break;
         }
         else {
           string ext = Path.GetExtension(s).ToLower();
           if (!string.IsNullOrEmpty(ext)) {
-            IExtractorFactory factory;
-            if (extractorFactories.TryGetValue(ext, out factory)) {
-              node.Nodes.Add(new TreeNode());
+            if (extractorFactories.ContainsKey(ext)) {
+              node.Nodes.Add(new OogTreeNode());
               break;
             }
           }
@@ -190,12 +187,12 @@ namespace Oog {
         try {
           TreeNode childNode;
           DirectoryInfo[] dirs = dir.GetDirectories();
-          Array.Sort<DirectoryInfo>(dirs, delegate(DirectoryInfo x, DirectoryInfo y) {
-            return x.Name.CompareTo(y.Name);
-          });
+//           Array.Sort<DirectoryInfo>(dirs, delegate(DirectoryInfo x, DirectoryInfo y) {
+//             return x.Name.CompareTo(y.Name);
+//           });
 
           Array.ForEach<DirectoryInfo>(dirs, delegate(DirectoryInfo subDir) {
-            childNode = new TreeNode();
+            childNode = new OogTreeNode(true);
             childNode.Text = subDir.Name;
             childNode.ImageIndex = imageIndexDic[string.Empty];
             childNode.SelectedImageIndex = imageIndexDic[string.Empty];
@@ -203,16 +200,15 @@ namespace Oog {
           });
 
           FileInfo[] files = dir.GetFiles();
-          Array.Sort(files, delegate(FileInfo x, FileInfo y) {
-            return x.Name.CompareTo(y.Name);
-          });
+//           Array.Sort(files, delegate(FileInfo x, FileInfo y) {
+//             return x.Name.CompareTo(y.Name);
+//           });
 
           Array.ForEach(files, delegate(FileInfo file) {
             string ext = Path.GetExtension(file.Name).ToLower();
             if (!string.IsNullOrEmpty(ext)) {
-              IExtractorFactory factory;
-              if (extractorFactories.TryGetValue(ext, out factory)) {
-                childNode = new TreeNode();
+              if (extractorFactories.ContainsKey(ext)) {
+                childNode = new OogTreeNode(false);
                 childNode.Text = file.Name;
                 childNode.ImageIndex = imageIndexDic[ext];
                 childNode.SelectedImageIndex = imageIndexDic[ext];
@@ -237,9 +233,6 @@ namespace Oog {
       if (pathNode == null) return null;
 
       for (int i = 1; i < items.Length; i++) {
-        //pathNode.Nodes.Clear();
-        //test
-        //if (pathNode.Nodes.Count == 0) {
         if (ChildNotSet(pathNode)) {
           pathNode.Nodes.Clear();
           SetChildNodes(pathNode);
@@ -255,8 +248,6 @@ namespace Oog {
         if (!found) return null;
       }
 
-      //test
-      //if (pathNode.Nodes.Count == 0) {
       if (ChildNotSet(pathNode)) {
         pathNode.Nodes.Clear();
         SetChildNodes(pathNode);
@@ -274,26 +265,21 @@ namespace Oog {
 
     protected override void OnBeforeExpand(TreeViewCancelEventArgs e) {
       Cursor.Current = Cursors.WaitCursor;
-      //test
-      //if (resetNodeRequired) {
-      if (resetNodeRequired || ChildNotSet(e.Node)) {
-        e.Node.Nodes.Clear();
-        SetChildNodes(e.Node);
-      }
-      foreach (TreeNode node in e.Node.Nodes) {
-        if (resetNodeRequired || ChildNotFound(node)) {
-          FindChildNode(node);
+      try {
+        if (resetNodeRequired || ChildNotSet(e.Node)) {
+          e.Node.Nodes.Clear();
+          SetChildNodes(e.Node);
         }
-//        if (resetNodeRequired) {
-//          node.Nodes.Clear();
-//          SetChildNodes(node);
-//        }
-//        else if (node.Nodes.Count == 0) {
-//          SetChildNodes(node);
-//        }
+        foreach (TreeNode node in e.Node.Nodes) {
+          if (resetNodeRequired || ChildNotFound(node)) {
+            FindChildNode(node);
+          }
+        }
+        base.OnBeforeExpand(e);
       }
-      base.OnBeforeExpand(e);
-      Cursor.Current = Cursors.Default;
+      finally {
+        Cursor.Current = Cursors.Default;
+      }
     }
 
     protected override bool ProcessDialogKey(Keys keyData) {

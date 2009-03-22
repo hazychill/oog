@@ -36,6 +36,8 @@ SRC_THUMBNAILVIEWER = \
 
 SRC_TREEVIEW = \
 	$(DIR_SRC_TREEVIEW)\DirectoryTreeView.cs \
+	$(DIR_SRC_TREEVIEW)\OogTreeNode.cs \
+	$(DIR_SRC_TREEVIEW)\Comparers.cs \
 
 SRC_VIEWER = \
 	$(DIR_SRC_VIEWER)\FullScreenViewerSettings.cs \
