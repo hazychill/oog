@@ -7,6 +7,7 @@ using System.IO;
 using System.Reflection;
 using System.Drawing;
 using System.Runtime.InteropServices;
+using System.Linq;
 
 namespace Oog {
   class DirectoryTreeView : TreeView {
@@ -185,37 +186,28 @@ namespace Oog {
       DirectoryInfo dir = new DirectoryInfo(path);
       if (dir.Exists) {
         try {
-          TreeNode childNode;
-          DirectoryInfo[] dirs = dir.GetDirectories();
-//           Array.Sort<DirectoryInfo>(dirs, delegate(DirectoryInfo x, DirectoryInfo y) {
-//             return x.Name.CompareTo(y.Name);
-//           });
+          var dirNodes = dir.GetDirectories()
+            .Select(subDir => {
+              TreeNode childNode = new OogTreeNode(true);
+              childNode.Text = subDir.Name;
+              childNode.ImageIndex = imageIndexDic[string.Empty];
+              childNode.SelectedImageIndex = imageIndexDic[string.Empty];
+              return childNode;
+            });
 
-          Array.ForEach<DirectoryInfo>(dirs, delegate(DirectoryInfo subDir) {
-            childNode = new OogTreeNode(true);
-            childNode.Text = subDir.Name;
-            childNode.ImageIndex = imageIndexDic[string.Empty];
-            childNode.SelectedImageIndex = imageIndexDic[string.Empty];
-            node.Nodes.Add(childNode);
-          });
+          var extNodes = dir.GetFiles()
+            .Select(file => new { File = file, Ext = Path.GetExtension(file.Name).ToLower() })
+            .Where(fileExt => !string.IsNullOrEmpty(fileExt.Ext))
+            .Where(fileExt => extractorFactories.ContainsKey(fileExt.Ext))
+            .Select(fileExt => {
+              TreeNode childNode = new OogTreeNode(false);
+              childNode.Text = fileExt.File.Name;
+              childNode.ImageIndex = imageIndexDic[fileExt.Ext];
+              childNode.SelectedImageIndex = imageIndexDic[fileExt.Ext];
+              return childNode;
+            });
 
-          FileInfo[] files = dir.GetFiles();
-//           Array.Sort(files, delegate(FileInfo x, FileInfo y) {
-//             return x.Name.CompareTo(y.Name);
-//           });
-
-          Array.ForEach(files, delegate(FileInfo file) {
-            string ext = Path.GetExtension(file.Name).ToLower();
-            if (!string.IsNullOrEmpty(ext)) {
-              if (extractorFactories.ContainsKey(ext)) {
-                childNode = new OogTreeNode(false);
-                childNode.Text = file.Name;
-                childNode.ImageIndex = imageIndexDic[ext];
-                childNode.SelectedImageIndex = imageIndexDic[ext];
-                node.Nodes.Add(childNode);
-              }
-            }
-          });
+          node.Nodes.AddRange(Enumerable.Concat(dirNodes, extNodes).ToArray());
         }
         catch { }
       }

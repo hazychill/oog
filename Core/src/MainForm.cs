@@ -71,13 +71,11 @@ namespace Oog {
 
       InitializePlugins();
 
-      directoryTreeView.TreeViewNodeSorter = new OogTreeNodeComparer();
       directoryTreeView.ExtractorFactories = extractorFactories;
       directoryTreeView.RefreshTree();
       SelectNode(directoryTreeView.Nodes[0].FullPath);
 
-      thumbnailViewer1.ApplySettings(settings.ThumbnailSettings);
-      fullScreenViewer.ApplySettings(settings.FullScreenViewerSettings);
+      ApplySettings(settings);
 
     }
 
@@ -241,8 +239,7 @@ namespace Oog {
       if (settingsForm.ShowDialog() == DialogResult.OK) {
         settings = settingsForm.Settings;
         settings.Save();
-        thumbnailViewer1.ApplySettings(settings.ThumbnailSettings);
-        fullScreenViewer.ApplySettings(settings.FullScreenViewerSettings);
+        ApplySettings(settings);
       }
     }
 
@@ -482,6 +479,12 @@ namespace Oog {
           thumbnailViewer1.ScrollThumbnailIntoView(index);
         }
       }
+    }
+
+    private void ApplySettings(OogSettings settings) {
+      directoryTreeView.TreeViewNodeSorter = settings.TreeNodeComparer;
+      thumbnailViewer1.ApplySettings(settings.ThumbnailSettings);
+      fullScreenViewer.ApplySettings(settings.FullScreenViewerSettings);
     }
   }
 }

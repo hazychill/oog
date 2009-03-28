@@ -15,14 +15,19 @@ namespace Oog {
     Dictionary<string, string> jumpPath;
     Rectangle windowStartup;
     FormWindowState windowState;
+    IOogTreeNodeComparer treeNodeComparer;
 
-    private OogSettings(ThumbnailSettings thumbnailSettings, FullScreenViewerSettings fullScreenViewerSettings, Rectangle windowStartup) {
+    private OogSettings(ThumbnailSettings thumbnailSettings, FullScreenViewerSettings fullScreenViewerSettings, Rectangle windowStartup, IOogTreeNodeComparer treeNodeComparer) {
       this.thumbnailSettings = thumbnailSettings;
       this.fullScreenViewerSettings = fullScreenViewerSettings;
 
       jumpPath = new Dictionary<string, string>();
       this.windowStartup = windowStartup;
+      treeNodeComparer = new OogTreeNodeSeparateNaturalNumberComparer();
     }
+
+    private OogSettings(ThumbnailSettings thumbnailSettings, FullScreenViewerSettings fullScreenViewerSettings, Rectangle windowStartup)
+      : this (thumbnailSettings, fullScreenViewerSettings, windowStartup, DefaultTreeNodeComparer) { }
 
     //const string SETTING_FILE_NAME = "OogSettings.xml";
 
@@ -78,6 +83,15 @@ namespace Oog {
               settings.JumpPath.Add(itemName, itemPath);
             }
           }
+
+          TypeConverter tncompConv = TypeDescriptor.GetConverter(typeof(IOogTreeNodeComparer));
+          XmlElement tncompElem = (XmlElement)document.SelectSingleNode("settings/treeNodeComparer");
+          if (tncompElem != null) {
+            try {
+              settings.TreeNodeComparer = (IOogTreeNodeComparer)tncompConv.ConvertFromString(tncompElem.GetAttribute("value"));
+            }
+            catch { }
+          }
         }
         catch (XmlException) { }
       }
@@ -107,12 +121,12 @@ namespace Oog {
         writer.WriteStartElement("windowStartup");
         TypeConverter rectConv = TypeDescriptor.GetConverter(typeof(Rectangle));
         writer.WriteAttributeString("value", rectConv.ConvertToString(windowStartup));
-        writer.WriteEndElement();
+        writer.WriteEndElement(); // </windowStartup>
         
         writer.WriteStartElement("windowState");
         TypeConverter wstateConv = TypeDescriptor.GetConverter(typeof(FormWindowState));
         writer.WriteAttributeString("value", wstateConv.ConvertToString(windowState));
-        writer.WriteEndElement();
+        writer.WriteEndElement(); // </windowState>
         
         writer.WriteStartElement("jumpPath");
         foreach (string itemName in jumpPath.Keys) {
@@ -122,9 +136,14 @@ namespace Oog {
           writer.WriteString(itemPath);
           writer.WriteEndElement();
         }
-        writer.WriteEndElement();
+        writer.WriteEndElement(); // </jumpPath>
+
+        writer.WriteStartElement("treeNodeComparer");
+        TypeConverter tncompConv = TypeDescriptor.GetConverter(typeof(IOogTreeNodeComparer));
+        writer.WriteAttributeString("value", tncompConv.ConvertToString(treeNodeComparer));
+        writer.WriteEndElement(); // </treeNodeComparer>
         
-        writer.WriteEndElement();
+        writer.WriteEndElement(); // </settings>
       }
     }
 
@@ -142,6 +161,13 @@ namespace Oog {
     public FullScreenViewerSettings FullScreenViewerSettings {
       get { return fullScreenViewerSettings; }
       set { fullScreenViewerSettings = value; }
+    }
+
+    [DefaultValue(typeof(IOogTreeNodeComparer), "OogTreeNodeSeparateNaturalNumberComparer")]
+    [Description("Tree node sorter.")]
+    public IOogTreeNodeComparer TreeNodeComparer {
+      get { return treeNodeComparer; }
+      set { treeNodeComparer = value; }
     }
 
     [Browsable(false)]
@@ -163,7 +189,7 @@ namespace Oog {
 
     [Browsable(false)]
     public static OogSettings Default {
-      get { return new OogSettings(ThumbnailSettings.Default, FullScreenViewerSettings.Default, DefaultWindowStartup); }
+      get { return new OogSettings(ThumbnailSettings.Default, FullScreenViewerSettings.Default, DefaultWindowStartup, DefaultTreeNodeComparer); }
     }
 
     [Browsable(false)]
@@ -174,6 +200,11 @@ namespace Oog {
     [Browsable(false)]
     public static FormWindowState DefaultWindowState {
       get { return FormWindowState.Normal; }
+    }
+
+    [Browsable(false)]
+    public static IOogTreeNodeComparer DefaultTreeNodeComparer {
+      get { return new OogTreeNodeSeparateNaturalNumberComparer(); }
     }
   }
 }
