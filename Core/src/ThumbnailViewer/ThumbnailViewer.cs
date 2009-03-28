@@ -8,6 +8,7 @@ using Oog.Plugin;
 using System.IO;
 using System.ComponentModel;
 using System.Threading;
+using System.Linq;
 
 namespace Oog {
   public class ThumbnailViewer : ScrollableControl {
@@ -152,7 +153,9 @@ namespace Oog {
       this.extractor = extractor;
       this.imageCreators = imageCreators;
 
-      thumbnails = Array.ConvertAll<string, Thumbnail>(names, Thumbnail.Create);
+      thumbnails = names
+        .Select(name => Thumbnail.Create(name, thumbnailSettings))
+        .ToArray();
 
       SetField();
 

@@ -482,9 +482,30 @@ namespace Oog {
     }
 
     private void ApplySettings(OogSettings settings) {
-      directoryTreeView.TreeViewNodeSorter = settings.TreeNodeComparer;
+      if (!HasSameType(directoryTreeView.TreeViewNodeSorter, settings.TreeNodeComparer)) {
+        directoryTreeView.TreeViewNodeSorter = settings.TreeNodeComparer;
+      }
       thumbnailViewer1.ApplySettings(settings.ThumbnailSettings);
       fullScreenViewer.ApplySettings(settings.FullScreenViewerSettings);
+    }
+
+    private bool HasSameType(object x, object y) {
+      if (x == null &&
+          y != null) {
+        return false;
+      }
+
+      if (x != null &&
+          y == null) {
+        return false;
+      }
+
+      if (x == null &&
+          y == null) {
+        return true;
+      }
+
+      return x.GetType() == y.GetType();
     }
   }
 }

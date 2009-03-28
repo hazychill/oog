@@ -15,8 +15,8 @@ namespace Oog {
     }
 
     private void InitializeComponents() {
-      const int FORM_WIDTH = 350;
-      const int FORM_HEIGHT = 350;
+      const int FORM_WIDTH = 400;
+      const int FORM_HEIGHT = 400;
       
       propertyGrid = new PropertyGrid();
       okButton = new Button();
