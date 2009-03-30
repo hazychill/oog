@@ -95,11 +95,11 @@ namespace Oog.Viewer {
 
     private void InitializeErrorImage() {
       errorImage = new Bitmap(200, 200);
-      using (Graphics g = Graphics.FromImage(errorImage)) {
-        Pen pen = new Pen(Color.Red, 4);
-        Font tempFont = SystemFonts.DefaultFont;
-        Font font = new Font(tempFont.FontFamily, 9);
-        Brush brush = new SolidBrush(Color.Red);
+      using (Graphics g = Graphics.FromImage(errorImage))
+      using (Pen pen = new Pen(Color.Red, 4))
+      using (Font tempFont = SystemFonts.DefaultFont)
+      using (Font font = new Font(tempFont.FontFamily, 9))
+      using (Brush brush = new SolidBrush(Color.Red)) {
         g.Clear(Color.White);
         string message = "Unable to display the image.";
         Size textSize = g.MeasureString(message, font).ToSize();
@@ -108,10 +108,6 @@ namespace Oog.Viewer {
         g.DrawRectangle(pen, new Rectangle(1, 1, 198, 198));
         g.DrawLine(pen, new Point(0, 0), new Point(199, 199));
         g.DrawLine(pen, new Point(199, 0), new Point(0, 199));
-        pen.Dispose();
-        tempFont.Dispose();
-        font.Dispose();
-        brush.Dispose();
       }
     }
 

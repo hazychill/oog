@@ -57,7 +57,6 @@ namespace Oog.Viewer {
       this.menuRotate = new System.Windows.Forms.ToolStripMenuItem();
       this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
       this.menuHide = new System.Windows.Forms.ToolStripMenuItem();
-      this.messageLabel = new System.Windows.Forms.Label();
       ((System.ComponentModel.ISupportInitialize)(this.picture)).BeginInit();
       this.contextMenuStrip1.SuspendLayout();
       this.SuspendLayout();
@@ -201,14 +200,6 @@ namespace Oog.Viewer {
       this.menuHide.Name = "menuHide";
       this.menuHide.Text = "&Hide menu";
       //
-      // messageLabel
-      //
-      this.messageLabel.AutoSize = true;
-      this.messageLabel.Font = new System.Drawing.Font(System.Drawing.FontFamily.GenericSansSerif, 15f);
-      this.messageLabel.BackColor = System.Drawing.Color.LightSteelBlue;
-      this.messageLabel.ForeColor = System.Drawing.Color.DarkBlue;
-      this.messageLabel.Visible = false;
-      //
       // FullScreenViewer
       //
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -216,7 +207,6 @@ namespace Oog.Viewer {
       this.BackColor = System.Drawing.Color.Black;
       this.ClientSize = new System.Drawing.Size(508, 396);
       this.Controls.AddRange(new System.Windows.Forms.Control[] {
-        this.messageLabel,
         this.picture
         });
       this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
@@ -254,6 +244,5 @@ namespace Oog.Viewer {
     private System.Windows.Forms.ToolStripMenuItem menuQualityMiddle;
     private System.Windows.Forms.ToolStripMenuItem menuQualityLow;
     private System.Windows.Forms.ToolStripMenuItem menuRotate;
-    private System.Windows.Forms.Label messageLabel;
   }
 }

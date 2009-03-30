@@ -236,38 +236,6 @@ namespace Oog.Viewer {
         }
       }
     }
-    /*
-    private Image GetImage(int index) {
-      Image original;
-      string name = imageNames[index];
-      using (Stream data = extractor.GetData(name)) {
-        if (data != null) {
-          string ext = Path.GetExtension(name).ToLower();
-          IImageCreator creator;
-          if (imageCreators.TryGetValue(ext, out creator)) {
-            original = creator.GetImage(data);
-            if (original == null) {
-              original = CreateErrorImage();
-            }
-          }
-          else {
-            original = CreateErrorImage();
-          }
-        }
-        else {
-          original = CreateErrorImage();
-        }
-
-        Image resized = ImageResizer.Resize(original, Screen.PrimaryScreen.Bounds.Size, resizer, interpolationMode);
-        if (original == resized) {
-          resized = new Bitmap(original);
-        }
-
-        original.Dispose();
-        return resized;
-      }
-    }
-     */
     public Image CreateErrorImage() {
       return new Bitmap(errorImage);
     }

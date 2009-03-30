@@ -175,48 +175,36 @@ namespace Oog.Viewer {
     }
 
     private void CheckQuality() {
+      menuQualityHigh.Checked = false;
+      menuQualityMiddle.Checked = false;
+      menuQualityLow.Checked = false;
+
       if (settings.InterpolationMode == InterpolationMode.High) {
         menuQualityHigh.Checked = true;
-        menuQualityMiddle.Checked = false;
-        menuQualityLow.Checked = false;
       }
       else if (settings.InterpolationMode == InterpolationMode.Low) {
-        menuQualityHigh.Checked = false;
         menuQualityMiddle.Checked = true;
-        menuQualityLow.Checked = false;
       }
       else if (settings.InterpolationMode == InterpolationMode.NearestNeighbor) {
-        menuQualityHigh.Checked = false;
-        menuQualityMiddle.Checked = false;
         menuQualityLow.Checked = true;
-      }
-      else {
-        menuQualityHigh.Checked = false;
-        menuQualityMiddle.Checked = false;
-        menuQualityLow.Checked = false;
       }
     }
 
     private void CheckSize() {
+      menuSizeScreen.Checked = false;
+      menuSizeOriginal.Checked = false;
+      menuSizeAdjustWidth.Checked = false;
+
       if (settings.Resizer == new Resizer(ImageResizer.ShrinkHoldingRatio)) {
         menuSizeScreen.Checked = true;
-        menuSizeOriginal.Checked = false;
-        menuSizeAdjustWidth.Checked = false;
       }
       else if (settings.Resizer == new Resizer(ImageResizer.OriginalSize)) {
-        menuSizeScreen.Checked = false;
         menuSizeOriginal.Checked = true;
-        menuSizeAdjustWidth.Checked = false;
       }
       else if (settings.Resizer == new Resizer(ImageResizer.ShrinkWidthHoldingRatio)) {
-        menuSizeScreen.Checked = false;
-        menuSizeOriginal.Checked = false;
         menuSizeAdjustWidth.Checked = true;
       }
       else {
-        menuSizeScreen.Checked = false;
-        menuSizeOriginal.Checked = false;
-        menuSizeAdjustWidth.Checked = false;
       }
     }
 
@@ -333,21 +321,6 @@ namespace Oog.Viewer {
       else {
         PrevImage(null, null);
       }
-    }
-
-    private void ShowMessage(string text) {
-      messageLabel.Text = text;
-      messageLabel.Location = new Point((this.Width-messageLabel.Width)/2, (this.Height-messageLabel.Height)/2);
-      messageLabel.Visible = true;
-
-      MethodInvoker waitAndHide = delegate {
-        System.Threading.Thread.Sleep(1*1000);
-        MethodInvoker hideMessageLabel = delegate {
-          messageLabel.Visible = false;
-        };
-        this.Invoke(hideMessageLabel);
-      };
-      waitAndHide.BeginInvoke(delegate(IAsyncResult ar) { waitAndHide.EndInvoke(ar); }, null);
     }
 
     private void ScrollDown() {

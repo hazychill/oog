@@ -126,22 +126,6 @@ namespace Oog.Viewer {
       OogSettings settings = OogSettings.Load();
       settings.FullScreenViewerSettings = this;
       settings.Save();
-      /*
-      using (XmlTextWriter writer = new XmlTextWriter(SETTING_FILE_NAME, Encoding.UTF8)) {
-        writer.WriteStartDocument();
-        writer.WriteStartElement("settings");
-
-        writer.WriteStartElement("resizer");
-        writer.WriteString(resizer.Method.Name);
-        writer.WriteEndElement();
-
-        writer.WriteStartElement("interpolationMode");
-        writer.WriteString(((int)interpolationMode).ToString());
-        writer.WriteEndElement();
-
-        writer.WriteEndElement();
-      }
-      */
     }
 
     internal void Save(XmlWriter writer) {
