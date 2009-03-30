@@ -275,7 +275,12 @@ namespace Oog.Viewer {
     }
 
     private void OnKeyDown(object sender, KeyEventArgs e) {
-      HideCursor();
+      if (e.KeyCode == Keys.Apps) {
+        ShowCursor();
+      }
+      else {
+        HideCursor();
+      }
       keyDownThenMouseMove = true;
 
       MethodInvoker handlerFunc;
