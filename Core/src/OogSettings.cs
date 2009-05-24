@@ -29,7 +29,7 @@ namespace Oog {
     private OogSettings(ThumbnailSettings thumbnailSettings, FullScreenViewerSettings fullScreenViewerSettings, Rectangle windowStartup)
       : this (thumbnailSettings, fullScreenViewerSettings, windowStartup, DefaultTreeNodeComparer) { }
 
-    //const string SETTING_FILE_NAME = "OogSettings.xml";
+    const string SETTING_FILE_NAME = "OogSettings.xml";
 
     static string settingFilePath = null;
 
@@ -44,9 +44,7 @@ namespace Oog {
     }
 
     public static OogSettings Load() {
-      string exePath = Application.ExecutablePath;
-      string exeDir = Path.GetDirectoryName(exePath);
-      string settingFilePath = Path.Combine(exeDir, OogSettings.GetSettingFilePath());
+      string settingFilePath = OogSettings.GetSettingFilePath();
 
       OogSettings settings = Default;
 
