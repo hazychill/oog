@@ -1,4 +1,3 @@
-CSC20 = "%windir%\Microsoft.NET\Framework\v2.0.50727\csc.exe"
 CSC35 = "%windir%\Microsoft.NET\Framework\v3.5\csc.exe"
 CSC = $(CSC35)
 

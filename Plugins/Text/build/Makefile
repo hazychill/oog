@@ -23,10 +23,10 @@ release : OogText.dll
 debug : OogText_debug.dll
 
 OogText.dll : $(SRCS) $(REFS_OOG:/reference:=)
-	csc /target:library /out:$@ $(REFS) $(SRCS)
+	$(CSC) /target:library /out:$@ $(REFS) $(SRCS)
 
 OogText_debug.dll : $(SRCS) $(REFS_OOG:/reference:=)
-	csc /target:library /out:$@ $(REFS) /debug /define:DEBUG $(SRCS)
+	$(CSC) /target:library /out:$@ $(REFS) /debug /define:DEBUG $(SRCS)
 
 OogPlugin.dll : $(OOG_HOME)\OogPlugin\OogPlugin.dll
 	copy $** .\

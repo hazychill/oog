@@ -27,10 +27,10 @@ release : OogXacRett.dll
 debug : OogXacRett_debug.dll
 
 OogXacRett.dll : $(SRCS) $(RESOURCES:/resource:=) $(REFS_OOG:/reference:=)
-	csc /target:library /out:$@ $(REFS) $(RESOURCES) $(SRCS)
+	$(CSC) /target:library /out:$@ $(REFS) $(RESOURCES) $(SRCS)
 
 OogXacRett_debug.dll : $(SRCS) $(RESOURCES:/resource:=) $(REFS_OOG:/reference:=)
-	csc /target:library /out:$@ $(REFS) $(RESOURCES) /debug /define:DEBUG $(SRCS)
+	$(CSC) /target:library /out:$@ $(REFS) $(RESOURCES) /debug /define:DEBUG $(SRCS)
 
 OogPlugin.dll : $(OOG_HOME)\OogPlugin\OogPlugin.dll
 	copy $** .\

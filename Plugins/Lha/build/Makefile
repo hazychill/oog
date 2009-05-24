@@ -27,10 +27,10 @@ release : OogLha.dll
 debug : OogLha_debug.dll
 
 OogLha.dll : $(SRCS) $(RESOURCES:/resource:=) $(REFS_OOG:/reference:=)
-	csc /target:library /out:$@ $(REFS) $(RESOURCES) $(SRCS)
+	$(CSC) /target:library /out:$@ $(REFS) $(RESOURCES) $(SRCS)
 
 OogLha_debug.dll : $(SRCS) $(RESOURCES:/resource:=) $(REFS_OOG:/reference:=)
-	csc /target:library /out:$@ $(REFS) $(RESOURCES) /debug /define:DEBUG $(SRCS)
+	$(CSC) /target:library /out:$@ $(REFS) $(RESOURCES) /debug /define:DEBUG $(SRCS)
 
 OogPlugin.dll : $(OOG_HOME)\OogPlugin\OogPlugin.dll
 	copy $** .\
