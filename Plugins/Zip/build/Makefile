@@ -8,33 +8,20 @@ DIR_SRC = ..\src
 DIR_SRC_SZL = ..\src\SharpZipLib
 DIR_LIB = ..\lib
 
-SRCS_OOG = \
+SRCS = \
 	$(DIR_SRC)\EmptyExtractor.cs \
 	$(DIR_SRC)\ZipExtractor.cs \
 	$(DIR_SRC)\ZipExtractorFactory.cs \
 	$(DIR_SRC)\ZipImageCreator.cs \
 
-SRCS_SZL = \
-	$(DIR_SRC_SZL)\BZip2\*.cs \
-	$(DIR_SRC_SZL)\Checksums\*.cs \
-	$(DIR_SRC_SZL)\Core\*.cs \
-	$(DIR_SRC_SZL)\Encryption\*.cs \
-	$(DIR_SRC_SZL)\GZip\*.cs \
-	$(DIR_SRC_SZL)\*.cs \
-	$(DIR_SRC_SZL)\Tar\*.cs \
-	$(DIR_SRC_SZL)\Zip\Compression\*.cs \
-	$(DIR_SRC_SZL)\Zip\Compression\Streams\*.cs \
-	$(DIR_SRC_SZL)\Zip\*.cs \
-
-SRCS = \
-	$(SRCS_OOG) \
-	$(SRCS_SZL) \
-
 RESOURCES = \
 	/resource:$(DIR_SRC)\Oog.Plugin.ZipExtractorFactory.resources \
 
+SHAP_ZIP_LIB = ICSharpCode.SharpZipLib.dll
+
 REFS_OOG = \
 	/reference:OogPlugin.dll \
+	/reference:$(SHAP_ZIP_LIB) \
 
 REFS_CLR = \
 
@@ -45,11 +32,14 @@ REFS = \
 release : OogZip.dll
 debug : OogZip_debug.dll
 
-OogZip.dll : $(SRCS) $(RESOURCES:/resource:=) $(REFS_OOG:/reference:=)
+OogZip.dll : $(SRCS) $(RESOURCES:/resource:=) $(REFS_OOG:/reference:=) $(SHAP_ZIP_LIB)
 	$(CSC) /target:library /out:$@ $(REFS) $(RESOURCES) $(SRCS)
 
-OogZip_debug.dll : $(SRCS) $(RESOURCES:/resource:=) $(REFS_OOG:/reference:=)
+OogZip_debug.dll : $(SRCS) $(RESOURCES:/resource:=) $(REFS_OOG:/reference:=) $(SHAP_ZIP_LIB)
 	$(CSC) /target:library /out:$@ $(REFS) $(RESOURCES) /debug /define:DEBUG $(SRCS)
+
+$(SHAP_ZIP_LIB) : $(DIR_LIB)\$(SHAP_ZIP_LIB)
+	copy $(DIR_LIB)\$(SHAP_ZIP_LIB) .\
 
 OogPlugin.dll : $(OOG_HOME)\OogPlugin\OogPlugin.dll
 	copy $** .\
