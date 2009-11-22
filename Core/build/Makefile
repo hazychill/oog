@@ -1,4 +1,4 @@
-CSC40 = "%windir%\Microsoft.NET\Framework\v4.0.20506\csc.exe"
+CSC40 = "%windir%\Microsoft.NET\Framework\v4.0.21006\csc.exe"
 CSC = $(CSC40)
 
 DIR_SRC = ..\src
