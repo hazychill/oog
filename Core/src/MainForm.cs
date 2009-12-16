@@ -177,7 +177,7 @@ namespace Oog {
 
     private void SetJumpTargets(Dictionary<string, string> jumpPath) {
       ClearJumpTargets();
-      int insertIndex = 4;
+      int insertIndex = 5;
       foreach (string itemName in jumpPath.Keys) {
         ToolStripButton button = new ToolStripButton();
         button.DisplayStyle = ToolStripItemDisplayStyle.Text;
@@ -201,8 +201,8 @@ namespace Oog {
     }
 
     private void ClearJumpTargets() {
-      int removeIndex = 4;
-      while (toolStrip1.Items.Count > 6) {
+      int removeIndex = 5;
+      while (toolStrip1.Items.Count > 7) {
         ToolStripItem item = toolStrip1.Items[removeIndex];
         toolStrip1.Items.RemoveAt(removeIndex);
         item.Dispose();
