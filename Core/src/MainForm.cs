@@ -7,6 +7,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Reflection;
 using System.IO;
+using System.Linq;
 using Oog.Plugin;
 using Oog.Viewer;
 
@@ -109,60 +110,67 @@ namespace Oog {
 
       string exeDir = Path.GetDirectoryName(Application.ExecutablePath);
 
-      foreach (string dllPath in Directory.GetFiles(exeDir, "*.dll")) {
-        Assembly pluginAssembly;
-        try {
-          pluginAssembly = Assembly.LoadFile(dllPath);
-        }
-        catch {
-          continue;
-        }
+      AddDefaultExtractorFactory(extractorFactories, new FolderExtractorFactory());
+      AddDefaultImageCreator(imageCreators, new DefaultImageCreator());
 
-        AddExtractorFactory(extractorFactories, typeof(Oog.Plugin.FolderExtractorFactory));
-        AddImageCreator(imageCreators, typeof(Oog.Plugin.DefaultImageCreator));
-        
-        Type[] types = pluginAssembly.GetExportedTypes();
-        foreach (Type type in types) {
-          AddExtractorFactory(extractorFactories, type);
-          AddImageCreator(imageCreators, type);
+      var dllQuery = Directory.EnumerateFiles(exeDir, "*.dll")
+        .Select(dllPath => {
+          try {
+            return Assembly.LoadFile(dllPath);
+          }
+          catch {
+            return null;
+          }
+        } )
+        .Where(asm => asm != null);
+
+      var extractorFactoryQuery = GetPluginQuery<IExtractorFactory>(dllQuery)
+        .SelectMany(factory => factory.SupportedExtensions.Select(ext => new { Key = ext, Value = factory }));
+      var imageCreatorQuery = GetPluginQuery<IImageCreator>(dllQuery)
+        .SelectMany(creator => creator.SupportedExtensions.Select(ext => new { Key = ext, Value = creator }));
+
+      foreach (var extractorFactoryKeyValue in extractorFactoryQuery) {
+        if (!extractorFactories.ContainsKey(extractorFactoryKeyValue.Key)) {
+          extractorFactories.Add(extractorFactoryKeyValue.Key, extractorFactoryKeyValue.Value);
+        }
+      }
+
+      foreach (var imageCreatorKeyValue in imageCreatorQuery) {
+        if (!imageCreators.ContainsKey(imageCreatorKeyValue.Key)) {
+          imageCreators.Add(imageCreatorKeyValue.Key, imageCreatorKeyValue.Value);
         }
       }
     }
 
-    private void AddExtractorFactory(Dictionary<string, IExtractorFactory> extractorFactories, Type type) {
-      Type factoryType = typeof(IExtractorFactory);
-
-      if (Array.Exists<Type>(type.GetInterfaces(), factoryType.Equals)) {
-        ConstructorInfo constructor = type.GetConstructor(Type.EmptyTypes);
-        if (constructor == null) return;
-
-        IExtractorFactory factory = constructor.Invoke(new object[0]) as IExtractorFactory;
-        if (factory == null) return;
-
-        foreach (string ext in factory.SupportedExtensions) {
-          if (!extractorFactories.ContainsKey(ext)) {
-            extractorFactories.Add(ext, factory);
-          }
+    private void AddDefaultExtractorFactory(Dictionary<string, IExtractorFactory> extractorFactories, IExtractorFactory defaultExtractorFactory) {
+      foreach (string key in defaultExtractorFactory.SupportedExtensions) {
+        if (!extractorFactories.ContainsKey(key)) {
+          extractorFactories.Add(key, defaultExtractorFactory);
         }
       }
     }
 
-    private void AddImageCreator(Dictionary<string, IImageCreator> imageCreators, Type type) {
-      Type creatorType = typeof(IImageCreator);
-
-      if (Array.Exists<Type>(type.GetInterfaces(), creatorType.Equals)) {
-        ConstructorInfo constructor = type.GetConstructor(Type.EmptyTypes);
-        if (constructor == null) return;
-
-        IImageCreator creator = constructor.Invoke(new object[0]) as IImageCreator;
-        if (creator == null) return;
-
-        foreach (string ext in creator.SupportedExtensions) {
-          if (!imageCreators.ContainsKey(ext)) {
-            imageCreators.Add(ext, creator);
-          }
+    private void AddDefaultImageCreator(Dictionary<string, IImageCreator> imageCreators, IImageCreator defaultImageCreator) {
+      foreach (string key in defaultImageCreator.SupportedExtensions) {
+        if (!imageCreators.ContainsKey(key)) {
+          imageCreators.Add(key, defaultImageCreator);
         }
       }
+    }
+
+    private IEnumerable<T> GetPluginQuery<T>(IEnumerable<Assembly> asms) {
+      return asms.SelectMany(asm => asm.GetExportedTypes())
+        .Where(type => type.IsClass)
+        .Where(type => !type.IsAbstract)
+        .Where(type => type.GetInterfaces().Contains(typeof(T)))
+        .Select(type => type.GetConstructor(Type.EmptyTypes))
+        .Where(ctor => ctor != null)
+        .Select(ctor => Instantiate<T>(ctor));
+    }
+
+    private T Instantiate<T>(ConstructorInfo ctor) {
+      dynamic instance = ctor.Invoke(null);
+      return instance;
     }
 
     static System.Text.RegularExpressions.Regex shortcutPattern = new System.Text.RegularExpressions.Regex("^(.*?)([a-zA-Z0-9])");

@@ -1,8 +1,7 @@
 OOG_HOME = ..\..\..
 
-CSC20 = "%windir%\Microsoft.NET\Framework\v2.0.50727\csc.exe"
-CSC35 = "%windir%\Microsoft.NET\Framework\v3.5\csc.exe"
-CSC = $(CSC35)
+CSC40 = "%windir%\Microsoft.NET\Framework\v4.0.21006\csc.exe"
+CSC = $(CSC40)
 
 DIR_SRC = ..\src
 DIR_SRC_SZL = ..\src\SharpZipLib

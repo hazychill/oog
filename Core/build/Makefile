@@ -1,5 +1,5 @@
-CSC35 = "%windir%\Microsoft.NET\Framework\v3.5\csc.exe"
-CSC = $(CSC35)
+CSC40 = "%windir%\Microsoft.NET\Framework\v4.0.21006\csc.exe"
+CSC = $(CSC40)
 
 DIR_SRC = ..\src
 DIR_SRC_DEFAULTPLUGIN = $(DIR_SRC)\DefaultPlugin
