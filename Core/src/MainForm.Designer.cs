@@ -30,6 +30,7 @@ namespace Oog {
       this.thumbnailViewer1 = new Oog.ThumbnailViewer();
       this.toolStrip1 = new System.Windows.Forms.ToolStrip();
       this.refreshToolStripButton = new System.Windows.Forms.ToolStripButton();
+      this.collapseToolStripButton = new System.Windows.Forms.ToolStripButton();
       this.settingToolStripButton = new System.Windows.Forms.ToolStripButton();
       this.jumpToolStripButton = new System.Windows.Forms.ToolStripButton();
       this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -108,6 +109,7 @@ namespace Oog {
       this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
       this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
         this.refreshToolStripButton,
+        this.collapseToolStripButton,
         this.settingToolStripButton,
         this.toolStripSeparator2,
         this.jumpToolStripButton,
@@ -128,6 +130,14 @@ namespace Oog {
       this.refreshToolStripButton.Name = "refreshToolStripButton";
       this.refreshToolStripButton.Text = "&Refresh";
       this.refreshToolStripButton.Click += new System.EventHandler(this.refreshToolStripButton_Click);
+      //
+      // collapseToolStripButton
+      //
+      this.collapseToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+      this.collapseToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.collapseToolStripButton.Name = "collapseToolStripButton";
+      this.collapseToolStripButton.Text = "&Collapse";
+      this.collapseToolStripButton.Click += new System.EventHandler(this.collapseToolStripButton_Click);
       //
       // settingToolStripButton
       //
@@ -235,6 +245,7 @@ namespace Oog {
     private System.Windows.Forms.ToolStrip toolStrip1;
     private System.Windows.Forms.TextBox selectedPathTextBox;
     private System.Windows.Forms.ToolStripButton refreshToolStripButton;
+    private System.Windows.Forms.ToolStripButton collapseToolStripButton;
     private System.Windows.Forms.StatusStrip statusStrip1;
     private System.Windows.Forms.ToolStripButton settingToolStripButton;
     private System.Windows.Forms.ToolStripButton jumpToolStripButton;

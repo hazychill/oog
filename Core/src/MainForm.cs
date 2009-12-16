@@ -228,6 +228,13 @@ namespace Oog {
       }
     }
 
+    private void collapseToolStripButton_Click(object sender, EventArgs e) {
+      directoryTreeView.CollapseAll();
+      if (directoryTreeView.Nodes.Count > 0) {
+        SelectNode(directoryTreeView.Nodes[0].FullPath);
+      }
+    }
+
 
     private void settingToolStripButton_Click(object sender, EventArgs e) {
       if (settingsForm == null) {
