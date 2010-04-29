@@ -202,7 +202,7 @@ namespace Oog {
 
     private void ClearJumpTargets() {
       int removeIndex = 5;
-      while (toolStrip1.Items.Count > 7) {
+      while (toolStrip1.Items.Count > 9) {
         ToolStripItem item = toolStrip1.Items[removeIndex];
         toolStrip1.Items.RemoveAt(removeIndex);
         item.Dispose();
@@ -281,6 +281,16 @@ namespace Oog {
           settings.JumpPath.Add(itemName, itemPath);
           settings.Save();
           AddJumpPath(itemName, itemPath);
+        }
+      }
+    }
+
+    private void checkToolStripButton_Click(object sender, EventArgs e) {
+      String path = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "checked");
+      using (Stream output = File.Open(path, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Read)) {
+        output.Seek(0, SeekOrigin.End);
+        using (TextWriter writer = new StreamWriter(output, new UTF8Encoding())) {
+          writer.WriteLine(selectedPathTextBox.Text);
         }
       }
     }

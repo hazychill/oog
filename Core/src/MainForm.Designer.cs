@@ -35,7 +35,9 @@ namespace Oog {
       this.jumpToolStripButton = new System.Windows.Forms.ToolStripButton();
       this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
       this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+      this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
       this.exitToolStripButton = new System.Windows.Forms.ToolStripButton();
+      this.checkToolStripButton = new System.Windows.Forms.ToolStripButton();
       this.selectedPathTextBox = new System.Windows.Forms.TextBox();
       this.statusStrip1 = new System.Windows.Forms.StatusStrip();
       this.imageCountToolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
@@ -114,6 +116,8 @@ namespace Oog {
         this.toolStripSeparator2,
         this.jumpToolStripButton,
         this.toolStripSeparator1,
+        this.checkToolStripButton,
+        this.toolStripSeparator3,
         this.exitToolStripButton});
       this.toolStrip1.Location = new System.Drawing.Point(0, 0);
       this.toolStrip1.Name = "toolStrip1";
@@ -169,6 +173,15 @@ namespace Oog {
       this.exitToolStripButton.Name = "exitToolStripButton";
       this.exitToolStripButton.Text = "&Exit";
       this.exitToolStripButton.Click += new System.EventHandler(this.exitToolStripButton_Click);
+      //
+      // checkToolStripButton
+      //
+      this.checkToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+      this.checkToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("checkToolStripButton.Image")));
+      this.checkToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.checkToolStripButton.Name = "checkToolStripButton";
+      this.checkToolStripButton.Text = "&Check";
+      this.checkToolStripButton.Click += new System.EventHandler(this.checkToolStripButton_Click);
       //
       // selectedPathTextBox
       //
@@ -251,7 +264,9 @@ namespace Oog {
     private System.Windows.Forms.ToolStripButton jumpToolStripButton;
     private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
     private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+    private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
     private System.Windows.Forms.ToolStripButton exitToolStripButton;
+    private System.Windows.Forms.ToolStripButton checkToolStripButton;
     private System.Windows.Forms.ToolStripStatusLabel imageCountToolStripStatusLabel;
     //private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar1;
     private System.Windows.Forms.ToolStripControlHost toolStripProgressBar1;
