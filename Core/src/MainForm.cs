@@ -400,6 +400,13 @@ namespace Oog {
           e.Handled = true;
         }
         break;
+      case Keys.C:
+        if (e.Alt == false && e.Control == true) {
+          checkToolStripButton.PerformClick();
+          MessageBox.Show(this, "checked");
+          e.Handled = true;
+        }
+        break;
       }
     }
 
@@ -453,6 +460,13 @@ namespace Oog {
       case Keys.L:
         if (e.Alt == false && e.Control == true) {
           selectedPathTextBox.Focus();
+          e.Handled = true;
+        }
+        break;
+      case Keys.C:
+        if (e.Alt == false && e.Control == true) {
+          checkToolStripButton.PerformClick();
+          MessageBox.Show(this, "checked");
           e.Handled = true;
         }
         break;
