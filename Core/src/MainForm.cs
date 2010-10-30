@@ -500,6 +500,7 @@ namespace Oog {
       if (e.KeyCode == Keys.Enter) {
         string path = selectedPathTextBox.Text;
         Jump(path.TrimEnd('\\'), false);
+        thumbnailViewer1.Focus();
       }
     }
 
