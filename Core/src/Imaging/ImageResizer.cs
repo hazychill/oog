@@ -33,6 +33,29 @@ namespace Oog {
       }
     }
 
+    public static Size ExpandHoldingRatio(Size original, Size target) {
+      if (original.Width < target.Width && original.Height < target.Height) {
+        float wRatio = (float)target.Width / (float)original.Width;
+        float hRatio = (float)target.Height / (float)original.Height;
+        float expandRatio = Math.Min(wRatio, hRatio);
+        float sizedWidth = (float)original.Width * expandRatio;
+        float sizedHeight = (float)original.Height * expandRatio;
+        return new Size((int)sizedWidth, (int)sizedHeight);
+      }
+      else {
+        return original;
+      }
+    }
+
+    public static Size FitScreenHoldingRatio(Size original, Size target) {
+      if (original.Width > target.Width || original.Height > target.Height) {
+        return ShrinkHoldingRatio(original, target);
+      }
+      else {
+        return ExpandHoldingRatio(original, target);
+      }
+    }
+
     public static Size ShrinkWidthHoldingRatio(Size original, Size target) {
       float shrinkRatio = (float)original.Width / target.Width;
       if (shrinkRatio > 1f) {
