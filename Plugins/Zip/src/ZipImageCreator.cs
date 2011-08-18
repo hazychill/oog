@@ -19,6 +19,10 @@ namespace Oog.Plugin {
     public Image GetImage(Stream data) {
       ZipFile zip = null;
       try {
+        if (data.CanSeek == false){
+          return GetDefaultImage();
+        }
+
         zip = new ZipFile(data);
 
         foreach (ZipEntry entry in zip ) {
