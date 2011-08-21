@@ -210,7 +210,7 @@ namespace Oog {
     }
 
     private void AddJumpPath(string itemName, string itemPath) {
-      int insertIndex = toolStrip1.Items.Count - 2;
+      int insertIndex = toolStrip1.Items.Count - 4;
 
       ToolStripButton button = new ToolStripButton();
       button.DisplayStyle = ToolStripItemDisplayStyle.Text;
