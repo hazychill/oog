@@ -220,35 +220,36 @@ namespace Oog {
     }
 
     private IEnumerable<int> EnumIndex() {
-      int count = thumbnails.Length;
-      for (int i = 0; i < thumbnails.Length; i++) {
-        while (true) {
-          int viewFirst = GetThumbnailAtPoint(0, 0);
-          int viewLast = Math.Min(
-            GetThumbnailAtPoint(this.ClientRectangle.Width-1, this.ClientRectangle.Height-1),
-            thumbnails.Length-1);
-          int index;
-          for (index = viewFirst; index <= viewLast; index++) {
+      var count = thumbnails.Length;
+      var indexMap = Enumerable.Range(0, count)
+        .ToDictionary(index => index,
+                      _ => false);
+      var yielded = 0;
 
-            if (count != thumbnails.Length) yield break;
+      while (yielded < count) {
+        int? indexToYield = null;
+        var viewFirst = GetThumbnailAtPoint(0, 0);
+        var viewLast = Math.Min(GetThumbnailAtPoint(this.ClientRectangle.Width-1, this.ClientRectangle.Height-1),
+                                thumbnails.Length-1);
+        for (var i = viewFirst; i <= viewLast; i++) {
+          if (indexMap[i] == false) {
+            indexToYield = i;
+            break;
+          }
+        }
 
-            if (!thumbnails[index].ImageCreated) {
+        if (indexToYield == null) {
+          for (var i = 0; i < count; i++) {
+            if (indexMap[i] == false) {
+              indexToYield = i;
               break;
             }
           }
-          if (index > viewLast) {
-            break;
-          }
-          else {
-            yield return index;
-          }
         }
 
-        if (count != thumbnails.Length) yield break;
-
-        if (!thumbnails[i].ImageCreated) {
-          yield return i;
-        }
+        indexMap[indexToYield.Value] = true;
+        yielded++;
+        yield return indexToYield.Value;
       }
     }
 
