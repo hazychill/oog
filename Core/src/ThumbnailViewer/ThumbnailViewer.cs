@@ -9,6 +9,8 @@ using System.IO;
 using System.ComponentModel;
 using System.Threading;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace Oog {
   public class ThumbnailViewer : ScrollableControl {
@@ -171,18 +173,30 @@ namespace Oog {
       imageCreateWorker.RunWorkerAsync();
     }
 
-    private void ClearThumbnails() {
-      foreach (Thumbnail thumbnail in thumbnails) {
-        if (thumbnail.Image != null) {
-          thumbnail.Image.Dispose();
-        }
-        thumbnail.Dispose();
-      }
+    private Task ClearThumbnails() {
+      var tempThumbnails = thumbnails;
       thumbnails = null;
-      if (extractor != null) {
-        extractor.Close();
-      }
+      var tempExtractor = extractor;
+      extractor = null;
       selectedIndex = -1;
+
+      return Task.Factory.StartNew(() => {
+        try {
+          foreach (Thumbnail thumbnail in tempThumbnails) {
+            if (thumbnail.Image != null) {
+              thumbnail.Image.Dispose();
+            }
+            thumbnail.Dispose();
+          }
+          if (tempExtractor != null) {
+            tempExtractor.Close();
+          }
+        }
+        catch (Exception e) {
+          Debug.WriteLine(e);
+          throw;
+        }
+      });
     }
 
 #region Create image background
