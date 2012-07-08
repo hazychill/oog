@@ -5,7 +5,7 @@ using ICSharpCode.SharpZipLib.Zip;
 using System.IO;
 
 namespace Oog.Plugin {
-    public class ZipExtractor : IExtractor {
+    public class ZipExtractor : IExtractor2 {
         ZipFile zipFile;
         string[] names;
 
@@ -39,6 +39,14 @@ namespace Oog.Plugin {
                 }
             }
             return names;
+        }
+
+        #endregion
+
+        #region IExtractor2 Members
+
+        public bool SynchronizationRequired {
+          get { return false; }
         }
 
         #endregion

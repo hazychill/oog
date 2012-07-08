@@ -11,6 +11,7 @@ using System.Threading;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using System.Collections.Concurrent;
 
 namespace Oog {
   public class ThumbnailViewer : ScrollableControl {
@@ -201,36 +202,109 @@ namespace Oog {
 
 #region Create image background
 
-    int prevPercentage;
-
     void imageCreateWorker_DoWork(object sender, DoWorkEventArgs e) {
       //Thread.CurrentThread.Priority = ThreadPriority.BelowNormal;
       Thread.CurrentThread.Priority = thumbnailSettings.ThumbnailThreadPriority;
 
       imageCreateWorker.ReportProgress(0);
-      prevPercentage = 0;
+      var prevPercentage = 0;
 
       int count = thumbnails.Length;
       int current = 0;
 
-      foreach (int index in EnumIndex()) {
+      bool doProgressReport = true;
 
-        if (imageCreateWorker.CancellationPending) {
-          e.Cancel = true;
-          break;
+      if (count == 0) return;
+
+      var progressReportTask = Task.Factory.StartNew(() => {
+        while (doProgressReport) {
+          Thread.Sleep(100);
+          var percentage = (current)*100/count;
+          if (percentage > prevPercentage) {
+            try {
+              imageCreateWorker.ReportProgress(percentage);
+              prevPercentage = percentage;
+            }
+            catch (InvalidOperationException ioe) {
+              //TODO
+              Debug.WriteLine(ioe);
+              break;
+            }
+          }
+          if (percentage >= 100) {
+            break;
+          }
         }
-        CreateThumbnailImage(index);
-        current++;
-        int percentage = (current)*100/count;
-        if (percentage > prevPercentage) {
-          imageCreateWorker.ReportProgress(percentage);
-          prevPercentage = percentage;
+      });
+
+      var ie2 = extractor as IExtractor2;
+
+      if (ie2 != null && ie2.SynchronizationRequired == false) {
+
+        var dop = Math.Max(1, Environment.ProcessorCount-1);
+
+        var result = Parallel.ForEach(
+          new OneByOnePartitioner<int>(EnumIndexAsync().GetConsumingEnumerable()),
+          new ParallelOptions() { MaxDegreeOfParallelism = dop },
+          (index, loopState) => {
+            if (loopState.ShouldExitCurrentIteration) return;
+
+            if (imageCreateWorker.CancellationPending) {
+              loopState.Stop();
+              return;
+            }
+            CreateThumbnailImage(index);
+            Interlocked.Increment(ref current);
+        });
+
+        if (!result.IsCompleted) {
+          e.Cancel = true;
         }
       }
+      else {
+        foreach (int index in EnumIndex()) {
+
+          if (imageCreateWorker.CancellationPending) {
+            e.Cancel = true;
+            break;
+          }
+          CreateThumbnailImage(index);
+          current++;
+        }
+      }
+
+      doProgressReport = false;
+
+
+
 
       if (!imageCreateWorker.CancellationPending) {
         imageCreateWorker.ReportProgress(100);
       }
+    }
+
+
+    private BlockingCollection<int> EnumIndexAsync() {
+//      var dop = Math.Max(1, Environment.ProcessorCount-1);
+      var dop = 1;
+      var queue = new BlockingCollection<int>(dop);
+
+      var produceTask = Task.Factory.StartNew(() => {
+        try {
+          foreach (var index in EnumIndex()) {
+            if (imageCreateWorker != null && imageCreateWorker.CancellationPending) {
+              break;
+            }
+            queue.Add(index);
+          }
+        }
+        finally {
+          queue.CompleteAdding();
+        }
+//       }, CancellationToken.None, TaskCreationOptions.None, uiScheduler);
+      });
+
+      return queue;
     }
 
     private IEnumerable<int> EnumIndex() {

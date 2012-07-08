@@ -9,8 +9,16 @@ namespace Oog {
         /// </summary>
         [STAThread]
         static void Main() {
+          AppDomain.CurrentDomain.UnhandledException += (sender, e) => {
+            MessageBox.Show(e.ExceptionObject.ToString());
+          };
+          try {
             Application.EnableVisualStyles();
             Application.Run(new MainForm());
+          }
+          catch (Exception e) {
+            MessageBox.Show(e.ToString());
+          }
         }
     }
 }
