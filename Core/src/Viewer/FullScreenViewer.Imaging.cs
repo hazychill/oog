@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using Oog.Plugin;
 using System.IO;
+using System.Threading;
 
 namespace Oog.Viewer {
   partial class FullScreenViewer {
@@ -24,6 +25,8 @@ namespace Oog.Viewer {
     MethodInvoker prevImage;
     //êÊì«Ç›Ç™äÆóπÇµÇΩÇ∆Ç´Ç…é¿çsÇ≥ÇÍÇÈ
     MethodInvoker lookAheadComplete;
+
+    public ManualResetEventSlim ThumbnailWorkerBlocker { get; set; }
 
     private void SetImage() {
       Image image = GetImage(currentIndex);
@@ -48,6 +51,9 @@ namespace Oog.Viewer {
     //éüÇÃâÊëúÇîÒìØä˙Ç≈êÊì«Ç›Ç∑ÇÈ
     private void LookAhead() {
       MethodInvoker lookAhead = LookAheadCore;
+      if (ThumbnailWorkerBlocker != null) {
+        ThumbnailWorkerBlocker.Reset();
+      }
       lookAhead.BeginInvoke(delegate(IAsyncResult ar) {
         try {
           lookAhead.EndInvoke(ar);
@@ -210,29 +216,36 @@ namespace Oog.Viewer {
     Dictionary<int, Size> originalSizes = new Dictionary<int, Size>();
 
     private Image GetImage(int index) {
-      string name = imageNames[index];
-      using (Stream data = extractor.GetData(name)) {
+      try {
+        string name = imageNames[index];
+        using (Stream data = extractor.GetData(name)) {
 
-        if (data == null) return CreateErrorImage();
+          if (data == null) return CreateErrorImage();
 
-        string ext = Path.GetExtension(name).ToLower();
-        IImageCreator creator = imageCreators[ext];
-        using (Image original = creator.GetImage(data)) {
+          string ext = Path.GetExtension(name).ToLower();
+          IImageCreator creator = imageCreators[ext];
+          using (Image original = creator.GetImage(data)) {
 
-          if (original == null) return CreateErrorImage();
+            if (original == null) return CreateErrorImage();
           
-          originalSizes[index] = original.Size;
+            originalSizes[index] = original.Size;
 
-          Image resized = ImageResizer.Resize(original, Screen.PrimaryScreen.Bounds.Size, settings.Resizer, settings.InterpolationMode, menuRotate.Checked);
-          if (resized == original) resized = new Bitmap(original);
-          if (this.Height < resized.Height) {
-            using (Graphics g  = Graphics.FromImage(resized)) {
-              using (Pen pen = new Pen(Color.Red, 2)) {
-                g.DrawLine(pen, 0, resized.Height-1, resized.Width, resized.Height-1);
+            Image resized = ImageResizer.Resize(original, Screen.PrimaryScreen.Bounds.Size, settings.Resizer, settings.InterpolationMode, menuRotate.Checked);
+            if (resized == original) resized = new Bitmap(original);
+            if (this.Height < resized.Height) {
+              using (Graphics g  = Graphics.FromImage(resized)) {
+                using (Pen pen = new Pen(Color.Red, 2)) {
+                  g.DrawLine(pen, 0, resized.Height-1, resized.Width, resized.Height-1);
+                }
               }
             }
+            return resized;
           }
-          return resized;
+        }
+      }
+      finally {
+        if (ThumbnailWorkerBlocker != null) {
+          ThumbnailWorkerBlocker.Set();
         }
       }
     }

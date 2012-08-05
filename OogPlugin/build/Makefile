@@ -7,6 +7,7 @@ DIR_SRC = ..\src
 SRCS = \
 	$(DIR_SRC)\PluginHelper.cs \
 	$(DIR_SRC)\IExtractor.cs \
+	$(DIR_SRC)\IExtractor2.cs \
 	$(DIR_SRC)\IExtractorFactory.cs \
 	$(DIR_SRC)\IImageCreator.cs \
 	$(DIR_SRC)\AssemblyInfo.cs \

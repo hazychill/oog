@@ -32,6 +32,7 @@ SRC_THUMBNAILVIEWER = \
 	$(DIR_SRC_THUMBNAILVIEWER)\ThumbnailViewer.cs \
 	$(DIR_SRC_THUMBNAILVIEWER)\ThumbnailSetting.cs \
 	$(DIR_SRC_THUMBNAILVIEWER)\Thumbnail.cs \
+	$(DIR_SRC_THUMBNAILVIEWER)\OneByOnePartitioner.cs \
 
 SRC_TREEVIEW = \
 	$(DIR_SRC_TREEVIEW)\DirectoryTreeView.cs \

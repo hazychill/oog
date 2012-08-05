@@ -505,11 +505,9 @@ namespace Oog {
     }
 
     private void ShowViewer() {
-      //FullScreenViewerSettings viewerSettings = FullScreenViewerSettings.Load();
-      //viewer.InterpolationMode = viewerSettings.InterpolationMode;
-      //viewer.Resizer = viewerSettings.Resizer;
       int index = thumbnailViewer1.SelectedIndex;
       if (0<=index && index<names.Length) {
+        fullScreenViewer.ThumbnailWorkerBlocker = thumbnailViewer1.WorkerBlocker;
         fullScreenViewer.Reset(extractor, imageCreators, names, index);
         fullScreenViewer.ShowDialog();
 

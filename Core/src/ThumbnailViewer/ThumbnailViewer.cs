@@ -9,6 +9,9 @@ using System.IO;
 using System.ComponentModel;
 using System.Threading;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Diagnostics;
+using System.Collections.Concurrent;
 
 namespace Oog {
   public class ThumbnailViewer : ScrollableControl {
@@ -25,6 +28,7 @@ namespace Oog {
     private IExtractor extractor;
     private BackgroundWorker imageCreateWorker;
     private Dictionary<string, IImageCreator> imageCreators;
+    private ManualResetEventSlim workerBlocker;
 
 #endregion
 
@@ -42,6 +46,8 @@ namespace Oog {
       thumbnails = new Thumbnail[0];
 
       thumbnailSettings = ThumbnailSettings.Default;
+
+      workerBlocker = new ManualResetEventSlim(true);
     }
 
     private void InitializeWorker() {
@@ -59,6 +65,10 @@ namespace Oog {
 
     public int SelectedIndex {
       get { return selectedIndex; }
+    }
+
+    public ManualResetEventSlim WorkerBlocker {
+      get { return workerBlocker; }
     }
 
 #endregion
@@ -171,52 +181,149 @@ namespace Oog {
       imageCreateWorker.RunWorkerAsync();
     }
 
-    private void ClearThumbnails() {
-      foreach (Thumbnail thumbnail in thumbnails) {
-        if (thumbnail.Image != null) {
-          thumbnail.Image.Dispose();
-        }
-        thumbnail.Dispose();
-      }
+    private Task ClearThumbnails() {
+      var tempThumbnails = thumbnails;
       thumbnails = null;
-      if (extractor != null) {
-        extractor.Close();
-      }
+      var tempExtractor = extractor;
+      extractor = null;
       selectedIndex = -1;
+
+      return Task.Factory.StartNew(() => {
+        try {
+          foreach (Thumbnail thumbnail in tempThumbnails) {
+            if (thumbnail.Image != null) {
+              thumbnail.Image.Dispose();
+            }
+            thumbnail.Dispose();
+          }
+          if (tempExtractor != null) {
+            tempExtractor.Close();
+          }
+        }
+        catch (Exception e) {
+          Debug.WriteLine(e);
+          throw;
+        }
+      });
     }
 
 #region Create image background
-
-    int prevPercentage;
 
     void imageCreateWorker_DoWork(object sender, DoWorkEventArgs e) {
       //Thread.CurrentThread.Priority = ThreadPriority.BelowNormal;
       Thread.CurrentThread.Priority = thumbnailSettings.ThumbnailThreadPriority;
 
       imageCreateWorker.ReportProgress(0);
-      prevPercentage = 0;
+      var prevPercentage = 0;
 
       int count = thumbnails.Length;
       int current = 0;
 
-      foreach (int index in EnumIndex()) {
+      bool doProgressReport = true;
 
-        if (imageCreateWorker.CancellationPending) {
-          e.Cancel = true;
-          break;
+      if (count == 0) return;
+
+      var progressReportTask = Task.Factory.StartNew(() => {
+        while (doProgressReport) {
+          Thread.Sleep(100);
+          var percentage = (current)*100/count;
+          if (percentage > prevPercentage) {
+            try {
+              imageCreateWorker.ReportProgress(percentage);
+              prevPercentage = percentage;
+            }
+            catch (InvalidOperationException ioe) {
+              //TODO
+              Debug.WriteLine(ioe);
+              break;
+            }
+          }
+          if (percentage >= 100) {
+            break;
+          }
+          try {
+            workerBlocker.Wait();
+          }
+          catch (ObjectDisposedException disposedError) {
+            Debug.WriteLine(disposedError);
+          }
         }
-        CreateThumbnailImage(index);
-        current++;
-        int percentage = (current)*100/count;
-        if (percentage > prevPercentage) {
-          imageCreateWorker.ReportProgress(percentage);
-          prevPercentage = percentage;
+      });
+
+      var ie2 = extractor as IExtractor2;
+
+      if (ie2 != null && ie2.SynchronizationRequired == false) {
+
+        var dop = Math.Max(1, Environment.ProcessorCount-1);
+
+        var result = Parallel.ForEach(
+          new OneByOnePartitioner<int>(EnumIndexAsync().GetConsumingEnumerable()),
+          new ParallelOptions() { MaxDegreeOfParallelism = dop },
+          (index, loopState) => {
+            if (loopState.ShouldExitCurrentIteration) return;
+
+            if (imageCreateWorker.CancellationPending) {
+              loopState.Stop();
+              return;
+            }
+            try {
+              workerBlocker.Wait();
+            }
+            catch (ObjectDisposedException disposedError) {
+              Debug.WriteLine(disposedError);
+            }
+            CreateThumbnailImage(index);
+            Interlocked.Increment(ref current);
+        });
+
+        if (!result.IsCompleted) {
+          e.Cancel = true;
         }
       }
+      else {
+        foreach (int index in EnumIndex()) {
+
+          if (imageCreateWorker.CancellationPending) {
+            e.Cancel = true;
+            break;
+          }
+          CreateThumbnailImage(index);
+          current++;
+        }
+      }
+
+      doProgressReport = false;
+
+
+
 
       if (!imageCreateWorker.CancellationPending) {
         imageCreateWorker.ReportProgress(100);
       }
+    }
+
+
+    private BlockingCollection<int> EnumIndexAsync() {
+//      var dop = Math.Max(1, Environment.ProcessorCount-1);
+      var dop = 1;
+      var queue = new BlockingCollection<int>(dop);
+
+      var produceTask = Task.Factory.StartNew(() => {
+        try {
+          foreach (var index in EnumIndex()) {
+            if (imageCreateWorker != null && imageCreateWorker.CancellationPending) {
+              break;
+            }
+            queue.Add(index);
+          }
+        }
+        finally {
+          queue.CompleteAdding();
+        }
+//       }, CancellationToken.None, TaskCreationOptions.None, uiScheduler);
+      });
+
+      return queue;
     }
 
     private IEnumerable<int> EnumIndex() {
@@ -507,6 +614,7 @@ namespace Oog {
     private void WaitWorkerCancellation(MethodInvoker method) {
       if (imageCreateWorker.IsBusy) {
         completed = method;
+        workerBlocker.Set();
         imageCreateWorker.CancelAsync();
       }
       else {
@@ -517,6 +625,7 @@ namespace Oog {
     protected override void Dispose(bool disposing) {
       ClearThumbnails();
       if (disposing) {
+        workerBlocker.Dispose();
         imageCreateWorker.Dispose();
       }
       base.Dispose(disposing);

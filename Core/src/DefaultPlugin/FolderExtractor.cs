@@ -4,7 +4,7 @@ using System.Text;
 using System.IO;
 
 namespace Oog.Plugin {
-    public class FolderExtractor : IExtractor {
+    public class FolderExtractor : IExtractor2 {
         string directoryPath;
         string[] names;
 
@@ -38,6 +38,14 @@ namespace Oog.Plugin {
         }
 
         public void Close() { }
+
+        #endregion
+
+        #region IExtractor2 Members
+
+        public bool SynchronizationRequired {
+          get { return false; }
+        }
 
         #endregion
 
