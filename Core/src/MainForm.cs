@@ -505,25 +505,17 @@ namespace Oog {
     }
 
     private void ShowViewer() {
-      thumbnailViewer1.WorkerBlocker.Reset();
-      try {
-        //FullScreenViewerSettings viewerSettings = FullScreenViewerSettings.Load();
-        //viewer.InterpolationMode = viewerSettings.InterpolationMode;
-        //viewer.Resizer = viewerSettings.Resizer;
-        int index = thumbnailViewer1.SelectedIndex;
-        if (0<=index && index<names.Length) {
-          fullScreenViewer.Reset(extractor, imageCreators, names, index);
-          fullScreenViewer.ShowDialog();
+      int index = thumbnailViewer1.SelectedIndex;
+      if (0<=index && index<names.Length) {
+        fullScreenViewer.ThumbnailWorkerBlocker = thumbnailViewer1.WorkerBlocker;
+        fullScreenViewer.Reset(extractor, imageCreators, names, index);
+        fullScreenViewer.ShowDialog();
 
-          index = fullScreenViewer.CurrentIndex;
-          if (0<=index && index<names.Length) {
-            thumbnailViewer1.SelectThumbnail(index);
-            thumbnailViewer1.ScrollThumbnailIntoView(index);
-          }
+        index = fullScreenViewer.CurrentIndex;
+        if (0<=index && index<names.Length) {
+          thumbnailViewer1.SelectThumbnail(index);
+          thumbnailViewer1.ScrollThumbnailIntoView(index);
         }
-      }
-      finally {
-        thumbnailViewer1.WorkerBlocker.Set();
       }
     }
 

@@ -241,7 +241,12 @@ namespace Oog {
           if (percentage >= 100) {
             break;
           }
-          workerBlocker.Wait();
+          try {
+            workerBlocker.Wait();
+          }
+          catch (ObjectDisposedException disposedError) {
+            Debug.WriteLine(disposedError);
+          }
         }
       });
 
@@ -261,7 +266,12 @@ namespace Oog {
               loopState.Stop();
               return;
             }
-            workerBlocker.Wait();
+            try {
+              workerBlocker.Wait();
+            }
+            catch (ObjectDisposedException disposedError) {
+              Debug.WriteLine(disposedError);
+            }
             CreateThumbnailImage(index);
             Interlocked.Increment(ref current);
         });
@@ -604,6 +614,7 @@ namespace Oog {
     private void WaitWorkerCancellation(MethodInvoker method) {
       if (imageCreateWorker.IsBusy) {
         completed = method;
+        workerBlocker.Set();
         imageCreateWorker.CancelAsync();
       }
       else {
@@ -614,6 +625,7 @@ namespace Oog {
     protected override void Dispose(bool disposing) {
       ClearThumbnails();
       if (disposing) {
+        workerBlocker.Dispose();
         imageCreateWorker.Dispose();
       }
       base.Dispose(disposing);
