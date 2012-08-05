@@ -26,13 +26,11 @@ namespace Oog {
 
     private class OneByOneEnumerable<U> : IEnumerable<U> {
       private IEnumerator<U> source;
-      private bool enumerationFinished;
 
       object enumerateLock;
 
       public OneByOneEnumerable(IEnumerable<U> source) {
         this.source = source.GetEnumerator();
-        enumerationFinished = false;
         enumerateLock = new object();
       }
 
