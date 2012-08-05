@@ -188,6 +188,10 @@ namespace Oog {
       extractor = null;
       selectedIndex = -1;
 
+      var temp = workerBlocker;
+      workerBlocker = new ManualResetEventSlim(true);
+      temp.Dispose();
+
       return Task.Factory.StartNew(() => {
         try {
           foreach (Thumbnail thumbnail in tempThumbnails) {
