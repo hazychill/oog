@@ -28,6 +28,7 @@ namespace Oog {
     private IExtractor extractor;
     private BackgroundWorker imageCreateWorker;
     private Dictionary<string, IImageCreator> imageCreators;
+    private ManualResetEventSlim workerBlocker;
 
 #endregion
 
@@ -45,6 +46,8 @@ namespace Oog {
       thumbnails = new Thumbnail[0];
 
       thumbnailSettings = ThumbnailSettings.Default;
+
+      workerBlocker = new ManualResetEventSlim(true);
     }
 
     private void InitializeWorker() {
@@ -62,6 +65,10 @@ namespace Oog {
 
     public int SelectedIndex {
       get { return selectedIndex; }
+    }
+
+    public ManualResetEventSlim WorkerBlocker {
+      get { return workerBlocker; }
     }
 
 #endregion
@@ -234,6 +241,7 @@ namespace Oog {
           if (percentage >= 100) {
             break;
           }
+          workerBlocker.Wait();
         }
       });
 
@@ -253,6 +261,7 @@ namespace Oog {
               loopState.Stop();
               return;
             }
+            workerBlocker.Wait();
             CreateThumbnailImage(index);
             Interlocked.Increment(ref current);
         });
