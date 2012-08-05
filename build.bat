@@ -53,3 +53,5 @@ cd Plugins\SpiWrapper\Xp3\build
 popd .
 
 endlocal
+
+pause
