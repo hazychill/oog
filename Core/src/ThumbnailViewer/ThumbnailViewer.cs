@@ -452,7 +452,17 @@ namespace Oog {
 
     protected override void WndProc(ref Message m) {
       if (m.Msg == WM_MOUSEWHEEL) {
-        int delta = m.WParam.ToInt32() >> 16;
+        int delta;
+        if (IntPtr.Size == 4) {
+          delta = m.WParam.ToInt32() >> 16;
+        }
+        else if (IntPtr.Size == 8) {
+          delta = (int)m.WParam.ToInt64();
+          delta = delta >> 16;
+        }
+        else {
+          delta = 0;
+        }
         WheelScroll(delta);
       }
       else {
