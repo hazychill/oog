@@ -6,7 +6,7 @@ set NMAKE=nmake
 
 pushd .
 cd Core\build
-%NMAKE%
+%NMAKE% %*
 copy *.exe ..\..\
 copy *.dll ..\..\
 copy *.pdb ..\..\
@@ -14,42 +14,42 @@ popd
 
 pushd .
 cd Plugins\Zip\build
-%NMAKE%
+%NMAKE% %*
 popd .
 
 pushd .
 cd Plugins\Lha\build
-%NMAKE%
+%NMAKE% %*
 popd .
 
 pushd .
 cd Plugins\Rar\build
-%NMAKE%
+%NMAKE% %*
 popd .
 
 pushd .
 cd Plugins\XacRett\build
-%NMAKE%
+%NMAKE% %*
 popd .
 
 pushd .
 cd Plugins\Text\build
-%NMAKE%
+%NMAKE% %*
 popd .
 
 pushd .
 cd Plugins\SpiWrapper\Util\build
-%NMAKE%
+%NMAKE% %*
 popd .
 
 pushd .
 cd Plugins\SpiWrapper\Tlg\build
-%NMAKE%
+%NMAKE% %*
 popd .
 
 pushd .
 cd Plugins\SpiWrapper\Xp3\build
-%NMAKE%
+%NMAKE% %*
 popd .
 
 endlocal

@@ -20,3 +20,15 @@ Plugins/XacRett/build/OogXacRett.dll
 Plugins/Zip/build/ICSharpCode.SharpZipLib.dll
 Plugins/Zip/build/OogPlugin.dll
 Plugins/Zip/build/OogZip.dll
+Oog64.exe
+OogPlugin64.dll
+Plugins/Lha/build/OogLha64.dll
+Plugins/Rar/build/OogRar64.dll
+Plugins/SpiWrapper/Tlg/build/OogTlg64.dll
+Plugins/SpiWrapper/Tlg/build/SpiUtility64.dll
+Plugins/SpiWrapper/Util/SpiUtility64.dll
+Plugins/SpiWrapper/Xp3/build/OogXp364.dll
+Plugins/SpiWrapper/Xp3/build/SpiUtility64.dll
+Plugins/Text/build/OogText64.dll
+Plugins/XacRett/build/OogXacRett64.dll
+Plugins/Zip/build/OogZip64.dll

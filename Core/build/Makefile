@@ -1,5 +1,6 @@
 CSC40 = "%windir%\Microsoft.NET\Framework\v4.0.30319\csc.exe"
 CSC = $(CSC40)
+CSC64bit = "%windir%\Microsoft.NET\Framework64\v4.0.30319\csc.exe"
 
 DIR_SRC = ..\src
 DIR_SRC_DEFAULTPLUGIN = $(DIR_SRC)\DefaultPlugin
@@ -62,19 +63,31 @@ RESOURCES = \
 
 OOG_PLUGIN = .\OogPlugin.dll
 
+OOG_PLUGIN_64 = .\OogPlugin64.dll
+
 ICON = ..\data\oog.ico
 
 REFS_OOG = \
 	/reference:$(OOG_PLUGIN) \
 
+REFS_OOG_64 = \
+	/reference:$(OOG_PLUGIN_64) \
+
 REFS_CLR = \
+
+REFS_CLR_64 = \
 
 REFS = \
 	$(REFS_OOG) \
 	$(REFS_CLR) \
 
+REFS_64 = \
+	$(REFS_OOG_64) \
+	$(REFS_CLR_64) \
+
 release : Oog.exe
 debug : Oog_debug.exe
+dotnet64 : Oog64.exe
 
 Oog.exe : $(SRCS) $(RESOURCES:/resource:=) $(REFS_OOG:/reference:=) $(ICON)
 	$(CSC) /target:winexe /out:$@ /win32icon:$(ICON) $(REFS) $(RESOURCES) $(SRCS)
@@ -82,8 +95,14 @@ Oog.exe : $(SRCS) $(RESOURCES:/resource:=) $(REFS_OOG:/reference:=) $(ICON)
 Oog_debug.exe : $(SRCS) $(RESOURCES:/resource:=) $(REFS_OOG:/reference:=) $(ICON)
 	$(CSC) /target:winexe /out:$@ /win32icon:$(ICON) $(REFS) $(RESOURCES) /debug /define:DEBUG $(SRCS)
 
+Oog64.exe : $(SRCS) $(RESOURCES:/resource:=) $(REFS_OOG_64:/reference:=) $(ICON)
+	$(CSC64bit) /target:winexe /out:$@ /win32icon:$(ICON) $(REFS_64) $(RESOURCES) $(SRCS)
+
 $(OOG_PLUGIN) : ..\..\OogPlugin\OogPlugin.dll
 	copy ..\..\OogPlugin\OogPlugin.dll .\
+
+$(OOG_PLUGIN_64) : ..\..\OogPlugin\OogPlugin64.dll
+	copy ..\..\OogPlugin\OogPlugin64.dll .\
 
 clean :
 	del *.exe
