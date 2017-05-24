@@ -120,6 +120,12 @@ namespace Oog {
       return new Size(original.Width*3/5, original.Height*3/5);
     }
 
+    public static Size SizeWidthScreenRatio80(Size original, Size target){
+      var width = target.Width * 4 / 5;
+      var height = width * original.Height / original.Width;
+      return new Size(width, height);
+    }
+
 //     public static Resizer GetSizeFixedResizer(Size size) {
 //       Size sizeTemp = size;
 //       Resizer resizer = delegate(Size original, Size target) {
