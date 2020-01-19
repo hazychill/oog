@@ -4,6 +4,12 @@ using System.Text;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.ComponentModel;
+using System.Drawing.Imaging;
+using System.IO;
+using ImageSharp = SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.PixelFormats;
+using static SixLabors.ImageSharp.ImageExtensions;
 
 namespace Oog {
 
@@ -139,13 +145,22 @@ namespace Oog {
         return original;
       }
       else {
-        Bitmap bmp = new Bitmap(changedSize.Width, changedSize.Height);
-        using (Graphics g = Graphics.FromImage(bmp)) {
-          g.InterpolationMode = interpolationMode;
-          Rectangle rect = new Rectangle(new Point(0, 0), changedSize);
-          g.DrawImage(original, rect);
+        using (MemoryStream origStream = new MemoryStream()) {
+          original.Save(origStream, ImageFormat.Png);
+          origStream.Flush();
+          origStream.Seek(0, SeekOrigin.Begin);
+          using (var imshImage = ImageSharp.Image.Load(origStream)) {
+            imshImage.Mutate(x => x.Resize(changedSize.Width, changedSize.Height));
+            using (MemoryStream resizedStream = new MemoryStream()) {
+              imshImage.SaveAsPng(resizedStream);
+              resizedStream.Flush();
+              resizedStream.Seek(0, SeekOrigin.Begin);
+              using (Image resizedImage = Image.FromStream(resizedStream)) {
+                return new Bitmap(resizedImage);
+              }
+            }
+          }
         }
-        return bmp;
       }
     }
 
@@ -153,34 +168,48 @@ namespace Oog {
       if (rotate) {
         Size changedSize = resizer(new Size(original.Height, original.Width), target);
 
-        Bitmap bmp = new Bitmap(changedSize.Width, changedSize.Height);
-        using (Graphics g = Graphics.FromImage(bmp)) {
-          g.InterpolationMode = interpolationMode;
-          Point[] destPoints = new Point[]{
-            new Point(changedSize.Width-1, 0),
-            new Point(changedSize.Width-1, changedSize.Height-1),
-            new Point(0, 0)
-            };
-          g.DrawImage(original, destPoints);
+        using (MemoryStream origStream = new MemoryStream()) {
+          original.Save(origStream, ImageFormat.Png);
+          origStream.Flush();
+          origStream.Seek(0, SeekOrigin.Begin);
+          using (var imshImage = ImageSharp.Image.Load(origStream)) {
+            imshImage.Mutate(x => x.Rotate(RotateMode.Rotate90).Resize(changedSize.Width, changedSize.Height));
+            using (MemoryStream resizedStream = new MemoryStream()) {
+              imshImage.SaveAsPng(resizedStream);
+              resizedStream.Flush();
+              resizedStream.Seek(0, SeekOrigin.Begin);
+              using (Image resizedImage = Image.FromStream(resizedStream)) {
+                return new Bitmap(resizedImage);
+              }
+            }
+          }
         }
-        return bmp;
       }
       else {
+
         Size changedSize = resizer(original.Size, target);
 
         if (changedSize == original.Size) {
           return original;
         }
         else {
-          Bitmap bmp = new Bitmap(changedSize.Width, changedSize.Height);
-          using (Graphics g = Graphics.FromImage(bmp)) {
-            g.InterpolationMode = interpolationMode;
-            Rectangle rect = new Rectangle(new Point(0, 0), changedSize);
-            g.DrawImage(original, rect);
+          using (MemoryStream origStream = new MemoryStream()) {
+            original.Save(origStream, ImageFormat.Png);
+            origStream.Flush();
+            origStream.Seek(0, SeekOrigin.Begin);
+            using (var imshImage = ImageSharp.Image.Load(origStream)) {
+              imshImage.Mutate(x => x.Resize(changedSize.Width, changedSize.Height));
+              using (MemoryStream resizedStream = new MemoryStream()) {
+                imshImage.SaveAsPng(resizedStream);
+                resizedStream.Flush();
+                resizedStream.Seek(0, SeekOrigin.Begin);
+                using (Image resizedImage = Image.FromStream(resizedStream)) {
+                  return new Bitmap(resizedImage);
+                }
+              }
+            }
           }
-          return bmp;
         }
-
       }
     }
   }
