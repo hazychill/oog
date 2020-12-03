@@ -42,6 +42,8 @@ namespace Oog {
       fullScreenViewer = new FullScreenViewer();
       //this.components.Add(fullScreenViewer);
 
+      SixLabors.ImageSharp.Configuration.Default.MemoryAllocator = SixLabors.Memory.ArrayPoolMemoryAllocator.CreateWithMinimalPooling();
+
       settings = OogSettings.Load();
 
       jumpTargetContextMenu = new ContextMenuStrip();

@@ -145,44 +145,42 @@ namespace Oog {
         return original;
       }
       else {
-        using (MemoryStream origStream = new MemoryStream()) {
-          original.Save(origStream, ImageFormat.Png);
-          origStream.Flush();
-          origStream.Seek(0, SeekOrigin.Begin);
-          using (var imshImage = ImageSharp.Image.Load(origStream)) {
-            imshImage.Mutate(x => x.Resize(changedSize.Width, changedSize.Height));
-            using (MemoryStream resizedStream = new MemoryStream()) {
-              imshImage.SaveAsPng(resizedStream);
-              resizedStream.Flush();
-              resizedStream.Seek(0, SeekOrigin.Begin);
-              using (Image resizedImage = Image.FromStream(resizedStream)) {
-                return new Bitmap(resizedImage);
-              }
-            }
+        using (var imshImage = GetImageSharpImage(original)) {
+          imshImage.Mutate(x => x.Resize(changedSize.Width, changedSize.Height));
+          using (var resizedImage = GetImageFromSharpImage(imshImage)) {
+            return new Bitmap(resizedImage);
           }
         }
       }
+    }
+
+    private static Image GetImageFromSharpImage(ImageSharp.Image imshImage) {
+      using (var ms = new MemoryStream()) {
+        imshImage.SaveAsJpeg(ms);
+        ms.Flush();
+        ms.Seek(0, SeekOrigin.Begin);
+        return Image.FromStream(ms);
+      }
+    }
+
+    private static ImageSharp.Image GetImageSharpImage(Image image) {
+        using (MemoryStream origStream = new MemoryStream()) {
+          image.Save(origStream, ImageFormat.Jpeg);
+          origStream.Flush();
+          origStream.Seek(0, SeekOrigin.Begin);
+          return ImageSharp.Image.Load(origStream);
+        }
     }
 
     public static Image Resize(Image original, Size target, Resizer resizer, InterpolationMode interpolationMode, bool rotate) {
       if (rotate) {
         Size changedSize = resizer(new Size(original.Height, original.Width), target);
 
-        using (MemoryStream origStream = new MemoryStream()) {
-          original.Save(origStream, ImageFormat.Png);
-          origStream.Flush();
-          origStream.Seek(0, SeekOrigin.Begin);
-          using (var imshImage = ImageSharp.Image.Load(origStream)) {
+        using (var imshImage = GetImageSharpImage(original)) {
             imshImage.Mutate(x => x.Rotate(RotateMode.Rotate90).Resize(changedSize.Width, changedSize.Height));
-            using (MemoryStream resizedStream = new MemoryStream()) {
-              imshImage.SaveAsPng(resizedStream);
-              resizedStream.Flush();
-              resizedStream.Seek(0, SeekOrigin.Begin);
-              using (Image resizedImage = Image.FromStream(resizedStream)) {
-                return new Bitmap(resizedImage);
-              }
+            using (var resizedImage = GetImageFromSharpImage(imshImage)) {
+              return new Bitmap(resizedImage);
             }
-          }
         }
       }
       else {
@@ -193,20 +191,10 @@ namespace Oog {
           return original;
         }
         else {
-          using (MemoryStream origStream = new MemoryStream()) {
-            original.Save(origStream, ImageFormat.Png);
-            origStream.Flush();
-            origStream.Seek(0, SeekOrigin.Begin);
-            using (var imshImage = ImageSharp.Image.Load(origStream)) {
-              imshImage.Mutate(x => x.Resize(changedSize.Width, changedSize.Height));
-              using (MemoryStream resizedStream = new MemoryStream()) {
-                imshImage.SaveAsPng(resizedStream);
-                resizedStream.Flush();
-                resizedStream.Seek(0, SeekOrigin.Begin);
-                using (Image resizedImage = Image.FromStream(resizedStream)) {
-                  return new Bitmap(resizedImage);
-                }
-              }
+          using (var imshImage = GetImageSharpImage(original)) {
+            imshImage.Mutate(x => x.Resize(changedSize.Width, changedSize.Height));
+            using (var resizedImage = GetImageFromSharpImage(imshImage)) {
+              return new Bitmap(resizedImage);
             }
           }
         }
