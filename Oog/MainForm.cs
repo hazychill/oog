@@ -42,7 +42,7 @@ namespace Oog {
       fullScreenViewer = new FullScreenViewer();
       //this.components.Add(fullScreenViewer);
 
-      SixLabors.ImageSharp.Configuration.Default.MemoryAllocator = SixLabors.Memory.ArrayPoolMemoryAllocator.CreateWithMinimalPooling();
+      SixLabors.ImageSharp.Configuration.Default.MemoryAllocator = SixLabors.ImageSharp.Memory.ArrayPoolMemoryAllocator.CreateWithMinimalPooling();
 
       settings = OogSettings.Load();
 
