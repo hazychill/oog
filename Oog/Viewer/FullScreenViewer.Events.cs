@@ -253,9 +253,13 @@ namespace Oog.Viewer {
       keyEventMap.Add(Keys.Decimal,   SmartScrollBack);
       keyEventMap.Add(Keys.ShiftKey,  SmartScrollBack);
       keyEventMap.Add(Keys.Left,      PrevImage);
+      keyEventMap.Add(Keys.H,         PrevImage);
       keyEventMap.Add(Keys.Right,     NextImage);
+      keyEventMap.Add(Keys.L,         NextImage);
       keyEventMap.Add(Keys.Up,        ScrollUp);
+      keyEventMap.Add(Keys.K,         ScrollUp);
       keyEventMap.Add(Keys.Down,      ScrollDown);
+      keyEventMap.Add(Keys.J,         ScrollDown);
       keyEventMap.Add(Keys.Apps,      ShowMenu);
       keyEventMap.Add(Keys.Home,      ScrollRightTop);
       keyEventMap.Add(Keys.End,       ScrollLeftTop);
