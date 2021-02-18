@@ -452,6 +452,7 @@ namespace Oog {
         e.Handled = true;
         break;
       case Keys.Enter:
+      case Keys.O:
         ShowViewer();
         e.Handled = true;
         break;

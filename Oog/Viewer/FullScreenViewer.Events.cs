@@ -264,6 +264,7 @@ namespace Oog.Viewer {
       keyEventMap.Add(Keys.Home,      ScrollRightTop);
       keyEventMap.Add(Keys.End,       ScrollLeftTop);
       keyEventMap.Add(Keys.Escape,    Close);
+      keyEventMap.Add(Keys.O,    Close);
     }
 
     private void OnKeyDown(object sender, KeyEventArgs e) {

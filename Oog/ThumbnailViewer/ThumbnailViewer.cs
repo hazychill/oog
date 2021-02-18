@@ -497,15 +497,19 @@ namespace Oog {
       
       switch (keyData) {
       case Keys.Up:
+      case Keys.K:
         SelectUp();
         return true;
       case Keys.Down:
+      case Keys.J:
         SelectDown();
         return true;
       case Keys.Left:
+      case Keys.H:
         SelectLeft();
         return true;
       case Keys.Right:
+      case Keys.L:
         SelectRight();
         return true;
       case Keys.PageUp:
