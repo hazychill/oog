@@ -84,9 +84,11 @@ namespace Oog.Viewer {
       Resizer original = ImageResizer.OriginalSize;
       Resizer screen = ImageResizer.ShrinkHoldingRatio;
       Resizer adjustWidth = ImageResizer.ShrinkWidthHoldingRatio;
+      Resizer width80p = ImageResizer.SizeWidthScreenRatio80;
       menuSizeOriginal.Tag = original;
       menuSizeScreen.Tag = screen;
       menuSizeAdjustWidth.Tag = adjustWidth;
+      menuSizeWidth80p.Tag = width80p;
 
       menuQualityHigh.Tag = InterpolationMode.High;
       menuQualityMiddle.Tag = InterpolationMode.Low;

@@ -194,6 +194,7 @@ namespace Oog.Viewer {
       menuSizeScreen.Checked = false;
       menuSizeOriginal.Checked = false;
       menuSizeAdjustWidth.Checked = false;
+      menuSizeWidth80p.Checked = false;
 
       if (settings.Resizer == new Resizer(ImageResizer.ShrinkHoldingRatio)) {
         menuSizeScreen.Checked = true;
@@ -203,6 +204,9 @@ namespace Oog.Viewer {
       }
       else if (settings.Resizer == new Resizer(ImageResizer.ShrinkWidthHoldingRatio)) {
         menuSizeAdjustWidth.Checked = true;
+      }
+      else if (settings.Resizer == new Resizer(ImageResizer.SizeWidthScreenRatio80)) {
+        menuSizeWidth80p.Checked = true;
       }
       else {
       }

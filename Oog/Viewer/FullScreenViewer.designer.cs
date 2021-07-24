@@ -50,6 +50,7 @@ namespace Oog.Viewer {
       this.menuSizeOriginal = new System.Windows.Forms.ToolStripMenuItem();
       this.menuSizeScreen = new System.Windows.Forms.ToolStripMenuItem();
       this.menuSizeAdjustWidth = new System.Windows.Forms.ToolStripMenuItem();
+      this.menuSizeWidth80p = new System.Windows.Forms.ToolStripMenuItem();
       this.menuQuality = new System.Windows.Forms.ToolStripMenuItem();
       this.menuQualityHigh = new System.Windows.Forms.ToolStripMenuItem();
       this.menuQualityMiddle = new System.Windows.Forms.ToolStripMenuItem();
@@ -135,7 +136,8 @@ namespace Oog.Viewer {
       this.menuSize.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
         this.menuSizeOriginal,
         this.menuSizeScreen,
-        this.menuSizeAdjustWidth});
+        this.menuSizeAdjustWidth,
+        this.menuSizeWidth80p});
       this.menuSize.Name = "menuSize";
       this.menuSize.Text = "&Size mode";
       //
@@ -156,6 +158,12 @@ namespace Oog.Viewer {
       this.menuSizeAdjustWidth.Name = "menuSizeAdjustWidth";
       this.menuSizeAdjustWidth.Text = "&Adjust width";
       this.menuSizeAdjustWidth.Click += new System.EventHandler(this.ChangeSizeMode);
+      //
+      // menuSizeWidth80p
+      //
+      this.menuSizeWidth80p.Name = "menuSizeWidth80p";
+      this.menuSizeWidth80p.Text = "&Width 80%";
+      this.menuSizeWidth80p.Click += new System.EventHandler(this.ChangeSizeMode);
       //
       // menuQuality
       //
@@ -240,6 +248,7 @@ namespace Oog.Viewer {
     private System.Windows.Forms.ToolStripMenuItem menuSizeOriginal;
     private System.Windows.Forms.ToolStripMenuItem menuSizeScreen;
     private System.Windows.Forms.ToolStripMenuItem menuSizeAdjustWidth;
+    private System.Windows.Forms.ToolStripMenuItem menuSizeWidth80p;
     private System.Windows.Forms.ToolStripMenuItem menuQualityHigh;
     private System.Windows.Forms.ToolStripMenuItem menuQualityMiddle;
     private System.Windows.Forms.ToolStripMenuItem menuQualityLow;
