@@ -11,6 +11,7 @@ using System.IO;
 using System.Linq;
 using Oog.Plugin;
 using Oog.Viewer;
+using SixLabors.ImageSharp.Memory;
 
 namespace Oog {
   public partial class MainForm : Form {
@@ -41,6 +42,10 @@ namespace Oog {
     private void Form1_Load(object sender, EventArgs e) {
       fullScreenViewer = new FullScreenViewer();
       //this.components.Add(fullScreenViewer);
+
+      SixLabors.ImageSharp.Configuration.Default.MemoryAllocator = MemoryAllocator.Create(new MemoryAllocatorOptions() {
+        MaximumPoolSizeMegabytes = 128
+      });
 
       settings = OogSettings.Load();
 
