@@ -380,6 +380,9 @@ namespace Oog {
         IImageCreator creator = OogUtil.GetImageCreatorForName(imageCreators, name);
 
         using (Image original = creator.GetImage(data)) {
+          foreach (var propid in original.PropertyIdList) {
+            original.RemovePropertyItem(propid);
+          }
 
           if (original == null) {
             thumbnail.SetImage(null);
