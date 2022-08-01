@@ -4,6 +4,8 @@ using System.Text;
 using System.Windows.Forms;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Processing.Processors.Transforms;
 
 namespace Oog.Viewer {
   partial class FullScreenViewer {
@@ -180,13 +182,10 @@ namespace Oog.Viewer {
       menuQualityMiddle.Checked = false;
       menuQualityLow.Checked = false;
 
-      if (settings.InterpolationMode == InterpolationMode.High) {
+      if (settings.Resampler == KnownResamplers.Bicubic) {
         menuQualityHigh.Checked = true;
       }
-      else if (settings.InterpolationMode == InterpolationMode.Low) {
-        menuQualityMiddle.Checked = true;
-      }
-      else if (settings.InterpolationMode == InterpolationMode.NearestNeighbor) {
+      else if (settings.Resampler == KnownResamplers.NearestNeighbor) {
         menuQualityLow.Checked = true;
       }
     }
@@ -392,7 +391,7 @@ namespace Oog.Viewer {
 
     private void ChangeQuality(object sender, EventArgs e) {
       ToolStripMenuItem c = sender as ToolStripMenuItem;
-      settings.InterpolationMode = (InterpolationMode)c.Tag;
+      settings.Resampler = c.Tag as IResampler;
       SetImage();
       settings.Save();
       //new FullScreenViewerSettings(resizer, interpolationMode).Save();

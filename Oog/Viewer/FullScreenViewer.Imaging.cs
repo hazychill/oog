@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using Oog.Plugin;
 using System.IO;
 using System.Threading;
+using SixLabors.ImageSharp.Processing.Processors.Transforms;
 
 namespace Oog.Viewer {
   partial class FullScreenViewer {
@@ -230,7 +231,7 @@ namespace Oog.Viewer {
           
             originalSizes[index] = original.Size;
 
-            Image resized = ImageResizer.Resize(original, Screen.PrimaryScreen.Bounds.Size, settings.Resizer, settings.InterpolationMode, menuRotate.Checked);
+            Image resized = ImageResizer.Resize(original, Screen.PrimaryScreen.Bounds.Size, settings.Resizer, settings.Resampler, menuRotate.Checked);
             if (resized == original) resized = new Bitmap(original);
             if (this.Height < resized.Height) {
               using (Graphics g  = Graphics.FromImage(resized)) {
@@ -266,9 +267,9 @@ namespace Oog.Viewer {
 
     private void DoNothing() { }
 
-    public InterpolationMode InterpolationMode {
-      get { return settings.InterpolationMode; }
-      set { settings.InterpolationMode = value; }
+    public IResampler Resampler {
+      get { return settings.Resampler; }
+      set { settings.Resampler = value; }
     }
 
     public Resizer Resizer {

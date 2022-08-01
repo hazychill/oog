@@ -1,21 +1,34 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.ComponentModel;
 using System.Drawing.Imaging;
 using System.IO;
 using ImageSharp = SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
-using SixLabors.ImageSharp.PixelFormats;
 using static SixLabors.ImageSharp.ImageExtensions;
+using SixLabors.ImageSharp.Processing.Processors.Transforms;
 
 namespace Oog {
 
   public delegate Size Resizer(Size original, Size target);
 
   static class ImageResizer {
+
+    static Dictionary<InterpolationMode, IResampler> resamplerSelector;
+
+    static ImageResizer() {
+      resamplerSelector = new Dictionary<InterpolationMode, IResampler>();
+      resamplerSelector.Add(InterpolationMode.Bicubic, KnownResamplers.Bicubic);
+      resamplerSelector.Add(InterpolationMode.Bilinear, KnownResamplers.Triangle);
+      resamplerSelector.Add(InterpolationMode.Default, KnownResamplers.Bicubic);
+      resamplerSelector.Add(InterpolationMode.High, KnownResamplers.Bicubic);
+      resamplerSelector.Add(InterpolationMode.HighQualityBicubic, KnownResamplers.Bicubic);
+      resamplerSelector.Add(InterpolationMode.HighQualityBilinear, KnownResamplers.Bicubic);
+      resamplerSelector.Add(InterpolationMode.Invalid, KnownResamplers.Bicubic);
+      resamplerSelector.Add(InterpolationMode.Low, KnownResamplers.NearestNeighbor);
+      resamplerSelector.Add(InterpolationMode.NearestNeighbor, KnownResamplers.NearestNeighbor);
+    }
 
     public static Size OriginalSize(Size original, Size target) {
       return original;
@@ -139,6 +152,7 @@ namespace Oog {
 //       };
 //     }
 
+    [Obsolete("use Resize(Image, Size, Resizer, IResampler) instead")]
     public static Image Resize(Image original, Size target, Resizer resizer, InterpolationMode interpolationMode) {
       Size changedSize = resizer(original.Size, target);
       if (changedSize == original.Size) {
@@ -146,7 +160,34 @@ namespace Oog {
       }
       else {
         using (var imshImage = GetImageSharpImage(original)) {
-          imshImage.Mutate(x => x.Resize(changedSize.Width, changedSize.Height));
+          IResampler resampler = SelectResampler(interpolationMode);
+          imshImage.Mutate(x => x.Resize(changedSize.Width, changedSize.Height, resampler));
+          using (var resizedImage = GetImageFromSharpImage(imshImage)) {
+            return new Bitmap(resizedImage);
+          }
+        }
+      }
+    }
+
+    private static IResampler SelectResampler(InterpolationMode interpolationMode) {
+      IResampler resampler;
+      if (resamplerSelector.TryGetValue(interpolationMode, out var selected)) {
+        resampler = selected;
+      }
+      else {
+        resampler = KnownResamplers.Bicubic;
+      }
+      return resampler;
+    }
+
+    public static Image Resize(Image original, Size target, Resizer resizer, IResampler resampler) {
+      Size changedSize = resizer(original.Size, target);
+      if (changedSize == original.Size) {
+        return original;
+      }
+      else {
+        using (var imshImage = GetImageSharpImage(original)) {
+          imshImage.Mutate(x => x.Resize(changedSize.Width, changedSize.Height, resampler));
           using (var resizedImage = GetImageFromSharpImage(imshImage)) {
             return new Bitmap(resizedImage);
           }
@@ -172,15 +213,17 @@ namespace Oog {
         }
     }
 
+    [Obsolete("use Resize(Image, Size, Resizer, IResampler, bool) instead")]
     public static Image Resize(Image original, Size target, Resizer resizer, InterpolationMode interpolationMode, bool rotate) {
       if (rotate) {
         Size changedSize = resizer(new Size(original.Height, original.Width), target);
 
         using (var imshImage = GetImageSharpImage(original)) {
-            imshImage.Mutate(x => x.Rotate(RotateMode.Rotate90).Resize(changedSize.Width, changedSize.Height));
-            using (var resizedImage = GetImageFromSharpImage(imshImage)) {
-              return new Bitmap(resizedImage);
-            }
+          IResampler resampler = SelectResampler(interpolationMode);
+          imshImage.Mutate(x => x.Rotate(RotateMode.Rotate90).Resize(changedSize.Width, changedSize.Height, resampler));
+          using (var resizedImage = GetImageFromSharpImage(imshImage)) {
+            return new Bitmap(resizedImage);
+          }
         }
       }
       else {
@@ -192,7 +235,37 @@ namespace Oog {
         }
         else {
           using (var imshImage = GetImageSharpImage(original)) {
-            imshImage.Mutate(x => x.Resize(changedSize.Width, changedSize.Height));
+            IResampler resampler = SelectResampler(interpolationMode);
+            imshImage.Mutate(x => x.Resize(changedSize.Width, changedSize.Height, resampler));
+            using (var resizedImage = GetImageFromSharpImage(imshImage)) {
+              return new Bitmap(resizedImage);
+            }
+          }
+        }
+      }
+    }
+
+    public static Image Resize(Image original, Size target, Resizer resizer, IResampler resampler, bool rotate) {
+      if (rotate) {
+        Size changedSize = resizer(new Size(original.Height, original.Width), target);
+
+        using (var imshImage = GetImageSharpImage(original)) {
+          imshImage.Mutate(x => x.Rotate(RotateMode.Rotate90).Resize(changedSize.Width, changedSize.Height, resampler));
+          using (var resizedImage = GetImageFromSharpImage(imshImage)) {
+            return new Bitmap(resizedImage);
+          }
+        }
+      }
+      else {
+
+        Size changedSize = resizer(original.Size, target);
+
+        if (changedSize == original.Size) {
+          return original;
+        }
+        else {
+          using (var imshImage = GetImageSharpImage(original)) {
+            imshImage.Mutate(x => x.Resize(changedSize.Width, changedSize.Height, resampler));
             using (var resizedImage = GetImageFromSharpImage(imshImage)) {
               return new Bitmap(resizedImage);
             }

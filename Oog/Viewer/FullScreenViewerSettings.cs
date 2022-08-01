@@ -10,6 +10,8 @@ using System.IO;
 using System.Windows.Forms;
 using System.Reflection;
 using System.ComponentModel;
+using SixLabors.ImageSharp.Processing.Processors.Transforms;
+using SixLabors.ImageSharp.Processing;
 
 #endregion
 
@@ -17,19 +19,19 @@ namespace Oog.Viewer {
   [TypeConverter(typeof(ExpandableObjectConverter))]
   public class FullScreenViewerSettings {
     Resizer resizer;
-    InterpolationMode interpolationMode;
+    IResampler resampler;
     Color backColor;
 
     //const string SETTING_FILE_NAME = "OogSettings.xml";
 
-    private FullScreenViewerSettings(Resizer resizer, InterpolationMode interpolationMode, Color backColor) {
+    private FullScreenViewerSettings(Resizer resizer, IResampler resampler, Color backColor) {
       this.resizer = resizer;
-      this.interpolationMode = interpolationMode;
+      this.resampler = resampler;
       this.backColor = backColor;
     }
 
-    private FullScreenViewerSettings(Resizer resizer, InterpolationMode interpolationMode)
-      : this(resizer, interpolationMode, DefaultBackColor) { }
+    private FullScreenViewerSettings(Resizer resizer, IResampler resampler)
+      : this(resizer, resampler, DefaultBackColor) { }
 
     [Obsolete("Use Load(XmlDocument document) instead.")]
     public static FullScreenViewerSettings Load() {
@@ -50,7 +52,7 @@ namespace Oog.Viewer {
 
     public static FullScreenViewerSettings Load(XmlDocument document) {
       Resizer resizer;
-      InterpolationMode interpolationMode;
+      IResampler resampler;
       Color backColor;
 
       ResizerConverter rsConv = new ResizerConverter();
@@ -68,19 +70,19 @@ namespace Oog.Viewer {
         resizer = DefaultResizer;
       }
 
-      EnumConverter ipConv = new EnumConverter(typeof(InterpolationMode));
+      ResamplerConverter resamplerConverter = new ResamplerConverter();
 
-      XmlElement ipmodeElem = document.SelectSingleNode("settings/fullScreenViewer/interpolationMode") as XmlElement;
-      if (ipmodeElem != null) {
+      XmlElement resamplerElem = document.SelectSingleNode("settings/fullScreenViewer/resampler") as XmlElement;
+      if (resamplerElem != null) {
         try {
-          interpolationMode = (InterpolationMode)ipConv.ConvertFromString(ipmodeElem.GetAttribute("value"));
+          resampler = resamplerConverter.ConvertFrom(resamplerElem.GetAttribute("value")) as IResampler;
         }
         catch {
-          interpolationMode = DefaultInterpolationMode;
+          resampler = DefaultResampler;
         }
       }
       else {
-        interpolationMode = DefaultInterpolationMode;
+        resampler = DefaultResampler;
       }
 
       ColorConverter colorConv = new ColorConverter();
@@ -98,12 +100,12 @@ namespace Oog.Viewer {
         backColor = DefaultBackColor;
       }
 
-      return new FullScreenViewerSettings(resizer, interpolationMode, backColor);
+      return new FullScreenViewerSettings(resizer, resampler, backColor);
     }
 
     public static bool operator ==(FullScreenViewerSettings x, FullScreenViewerSettings y) {
       return (x.Resizer.Method == y.Resizer.Method) &&
-        (x.InterpolationMode == y.InterpolationMode) &&
+        (x.Resampler == y.Resampler) &&
           (x.BackColor.ToArgb() == y.BackColor.ToArgb());
     }
     public static bool operator !=(FullScreenViewerSettings x, FullScreenViewerSettings y) {
@@ -119,7 +121,7 @@ namespace Oog.Viewer {
       }
     }
     public override int GetHashCode() {
-      return interpolationMode.GetHashCode() + Resizer.GetHashCode() + backColor.GetHashCode();
+      return resampler.GetHashCode() + Resizer.GetHashCode() + backColor.GetHashCode();
     }
 
     public void Save() {
@@ -137,10 +139,10 @@ namespace Oog.Viewer {
       writer.WriteAttributeString("value", (string)rsConv.ConvertTo(null, null, resizer, typeof(string)));
       writer.WriteEndElement();
 
-      EnumConverter ipConv = new EnumConverter(typeof(InterpolationMode));
+      ResamplerConverter resamplerConverter = new ResamplerConverter();
       
-      writer.WriteStartElement("interpolationMode");
-      writer.WriteAttributeString("value", ipConv.ConvertToString(interpolationMode));
+      writer.WriteStartElement("resampler");
+      writer.WriteAttributeString("value", resamplerConverter.ConvertToString(resampler));
       writer.WriteEndElement();
 
       ColorConverter colorConv = new ColorConverter();
@@ -159,12 +161,12 @@ namespace Oog.Viewer {
       set { resizer = value; }
     }
 
-    [TypeConverter(typeof(InterpolationModeConverter))]
-    [DefaultValue(InterpolationMode.High)]
+    [TypeConverter(typeof(ResamplerConverter))]
+    [DefaultValue(typeof(IResampler), "Bicubic")]
     [Description("Resizing quality.")]
-    public InterpolationMode InterpolationMode {
-      get { return interpolationMode; }
-      set { interpolationMode = value; }
+    public IResampler Resampler {
+      get { return resampler; }
+      set { resampler = value; }
     }
 
     [Description("Background color of viewer.")]
@@ -176,14 +178,14 @@ namespace Oog.Viewer {
     private static Resizer DefaultResizer {
       get { return new Resizer(ImageResizer.OriginalSize); }
     }
-    private static InterpolationMode DefaultInterpolationMode {
-      get { return InterpolationMode.High; }
+    private static IResampler DefaultResampler {
+      get { return KnownResamplers.Bicubic; }
     }
     private static Color DefaultBackColor {
       get { return Color.Black; }
     }
     internal static FullScreenViewerSettings Default {
-      get { return new FullScreenViewerSettings(DefaultResizer, DefaultInterpolationMode, DefaultBackColor); }
+      get { return new FullScreenViewerSettings(DefaultResizer, DefaultResampler, DefaultBackColor); }
     }
 
   }

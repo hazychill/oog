@@ -8,17 +8,19 @@ using System.IO;
 using System.Xml;
 using System.ComponentModel;
 using System.Threading;
+using SixLabors.ImageSharp.Processing.Processors.Transforms;
+using SixLabors.ImageSharp.Processing;
 
 namespace Oog {
   [TypeConverter(typeof(ExpandableObjectConverter))]
   public class ThumbnailSettings {
     private const string KEY_SIZE = "thumbnailSize";
-    private const string KEY_INTERPOLATION_MODE = "thumbnailInterpolationMode";
+    private const string KEY_RESAMPLER = "thumbnailResampler";
     private const string KEY_BACK_COLOR = "thumbnailBackColor";
     private const string KEY_THREAD_PRIORITY = "thumbnailThreadPrioirty";
 
     private Size size;
-    private InterpolationMode interpolationMode;
+    private IResampler resampler;
     private Color backColor;
     private ThreadPriority threadPriority;
     
@@ -28,12 +30,12 @@ namespace Oog {
       set { size = value; }
     }
 
-    [TypeConverter(typeof(InterpolationModeConverter))]
-    [DefaultValue(InterpolationMode.High)]
+    [TypeConverter(typeof(ResamplerConverter))]
+    [DefaultValue(typeof(IResampler), "Bicubic")]
     [Description("Resizing quality.")]
-    public InterpolationMode InterpolationMode {
-      get { return interpolationMode; }
-      set { interpolationMode = value; }
+    public IResampler Resampler {
+      get { return resampler; }
+      set { resampler = value; }
     }
 
     [Description("Background color of thumbnail.")]
@@ -50,9 +52,9 @@ namespace Oog {
     }
 
 
-    private ThumbnailSettings(Size size, InterpolationMode interpolationMode, Color backColor, ThreadPriority threadPriority) {
+    private ThumbnailSettings(Size size, IResampler resampler, Color backColor, ThreadPriority threadPriority) {
       this.size = size;
-      this.interpolationMode = interpolationMode;
+      this.resampler = resampler;
       this.backColor = backColor;
       this.threadPriority = threadPriority;
     }
@@ -78,7 +80,7 @@ namespace Oog {
 
     public static ThumbnailSettings Load(XmlDocument document) {
       Size size;
-      InterpolationMode interpolationMode;
+      IResampler resampler;
       Color backColor;
       ThreadPriority threadPriority;
 
@@ -97,18 +99,18 @@ namespace Oog {
         size = DefaultSize;
       }
 
-      EnumConverter ipConv = new EnumConverter(typeof(InterpolationMode));
-      XmlElement ipmodeElem = document.SelectSingleNode("settings/thumbnail/interpolationMode") as XmlElement;
-      if (ipmodeElem != null) {
+      ResamplerConverter resamplerConverter = new ResamplerConverter();
+      XmlElement resamplerElem = document.SelectSingleNode("settings/thumbnail/resampler") as XmlElement;
+      if (resamplerElem != null) {
         try {
-          interpolationMode = (InterpolationMode)ipConv.ConvertFromString(ipmodeElem.GetAttribute("value"));
+          resampler = resamplerConverter.ConvertFromString(resamplerElem.GetAttribute("value")) as IResampler;
         }
         catch {
-          interpolationMode = DefaultInterpolationMode;
+          resampler = DefaultResampler;
         }
       }
       else {
-        interpolationMode = DefaultInterpolationMode;
+        resampler = DefaultResampler;
       }
 
       ColorConverter colorConv = new ColorConverter();
@@ -139,7 +141,7 @@ namespace Oog {
         threadPriority = DefaultThumbnailThreadPriority;
       }
 
-      return new ThumbnailSettings(size, interpolationMode, backColor, threadPriority);
+      return new ThumbnailSettings(size, resampler, backColor, threadPriority);
     }
 
     public void Save() {
@@ -157,10 +159,10 @@ namespace Oog {
       writer.WriteAttributeString("value", sizeConv.ConvertToString(size));
       writer.WriteEndElement();
 
-      EnumConverter ipConv = new EnumConverter(typeof(InterpolationMode));
+      ResamplerConverter resamplerConverter = new ResamplerConverter();
 
-      writer.WriteStartElement("interpolationMode");
-      writer.WriteAttributeString("value", ipConv.ConvertToString(interpolationMode));
+      writer.WriteStartElement("resampler");
+      writer.WriteAttributeString("value", resamplerConverter.ConvertToString(resampler));
       writer.WriteEndElement();
 
       ColorConverter colorConv = new ColorConverter();
@@ -187,7 +189,7 @@ namespace Oog {
       if (base.Equals(obj)) return true;
 
       return (this.Size==ts.Size) &&
-        (this.InterpolationMode == ts.InterpolationMode) &&
+        (this.Resampler == ts.Resampler) &&
         (this.BackColor.ToArgb() == ts.BackColor.ToArgb()) &&
         (this.ThumbnailThreadPriority == ts.ThumbnailThreadPriority);
     }
@@ -200,15 +202,15 @@ namespace Oog {
     }
 
     public override int GetHashCode() {
-      return size.GetHashCode() + interpolationMode.GetHashCode();
+      return size.GetHashCode() + resampler.GetHashCode();
     }
 
     private static Size DefaultSize {
       get { return new Size(150, 200); }
     }
 
-    private static  InterpolationMode DefaultInterpolationMode {
-      get { return InterpolationMode.High; }
+    private static  IResampler DefaultResampler {
+      get { return KnownResamplers.Bicubic; }
     }
     private static Color DefaultBackColor {
       get { return SystemColors.Window; }
@@ -217,7 +219,7 @@ namespace Oog {
       get { return ThreadPriority.BelowNormal; }
     }
     internal static ThumbnailSettings Default {
-      get { return new ThumbnailSettings(DefaultSize, DefaultInterpolationMode, DefaultBackColor, DefaultThumbnailThreadPriority); }
+      get { return new ThumbnailSettings(DefaultSize, DefaultResampler, DefaultBackColor, DefaultThumbnailThreadPriority); }
     }
   }
 }

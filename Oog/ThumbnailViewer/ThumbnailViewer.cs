@@ -100,7 +100,7 @@ namespace Oog {
     }
 
     private bool ClearRequired(ThumbnailSettings oldSettings, ThumbnailSettings newSettings) {
-      return (oldSettings.Size != newSettings.Size) || (oldSettings.InterpolationMode != newSettings.InterpolationMode);
+      return (oldSettings.Size != newSettings.Size) || (oldSettings.Resampler != newSettings.Resampler);
     }
 
     private void ClearThumbnailImages() {
@@ -117,8 +117,7 @@ namespace Oog {
       int rowEnd = (rectTop+e.ClipRectangle.Height) / cellSize.Height;
 
       Graphics g = e.Graphics;
-      g.InterpolationMode = thumbnailSettings.InterpolationMode;
-      for (int row = rowStart; row <= rowEnd; row++) {
+            for (int row = rowStart; row <= rowEnd; row++) {
         for (int col = 0; col < cols; col++) {
           int index = cols*row + col;
           if (0<=index && index < thumbnails.Length) {
@@ -389,7 +388,7 @@ namespace Oog {
             return;
           }
 
-          Image resized = ImageResizer.Resize(original, thumbnailSettings.Size, ImageResizer.ShrinkHoldingRatio, thumbnailSettings.InterpolationMode);
+          Image resized = ImageResizer.Resize(original, thumbnailSettings.Size, ImageResizer.ShrinkHoldingRatio, thumbnailSettings.Resampler);
           if (resized == original) resized = new Bitmap(original);
           thumbnail.SetImage(resized);
 

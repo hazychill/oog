@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using System.Drawing.Drawing2D;
 using Oog.Plugin;
 using System.IO;
+using SixLabors.ImageSharp.Processing;
 
 namespace Oog.Viewer {
   public partial class FullScreenViewer : Form {
@@ -90,9 +91,9 @@ namespace Oog.Viewer {
       menuSizeAdjustWidth.Tag = adjustWidth;
       menuSizeWidth80p.Tag = width80p;
 
-      menuQualityHigh.Tag = InterpolationMode.High;
-      menuQualityMiddle.Tag = InterpolationMode.Low;
-      menuQualityLow.Tag = InterpolationMode.NearestNeighbor;
+      menuQualityHigh.Tag = KnownResamplers.Bicubic;
+      menuQualityMiddle.Tag = KnownResamplers.Bicubic;
+      menuQualityLow.Tag = KnownResamplers.NearestNeighbor;
     }
 
     private void InitializeErrorImage() {

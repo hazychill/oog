@@ -6,13 +6,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="SixLabors.ImageSharp" Version="2.0.0" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="2.1.0" />
   </ItemGroup>
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net7.0-windows</TargetFramework>
-    <Nullable>enable</Nullable>
+    <!-- <Nullable>enable</Nullable> -->
     <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
 
