@@ -164,10 +164,11 @@ namespace Oog.Viewer {
     }
 
     Point menuPoint = new Point(Screen.PrimaryScreen.Bounds.Width-1, 0);
+    Point menuShowPoint = new Point(Screen.PrimaryScreen.Bounds.Width-10, 10);
 
     void CheckMenuPosition(object sender, MouseEventArgs e) {
       Point p = GetScreenPoint(sender, e);
-      if (p == menuPoint) {
+      if (p.X > menuShowPoint.X && p.Y < menuShowPoint.Y) {
         CheckSize();
         CheckQuality();
         contextMenuStrip1.Show(menuPoint);
