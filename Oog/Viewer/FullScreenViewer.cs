@@ -83,7 +83,7 @@ namespace Oog.Viewer {
 
     private void InitializeMenuSettings() {
       Resizer original = ImageResizer.OriginalSize;
-      Resizer screen = ImageResizer.ShrinkHoldingRatio;
+      Resizer screen = ImageResizer.FitScreenHoldingRatio;
       Resizer adjustWidth = ImageResizer.ShrinkWidthHoldingRatio;
       Resizer width80p = ImageResizer.SizeWidthScreenRatio80;
       menuSizeOriginal.Tag = original;
