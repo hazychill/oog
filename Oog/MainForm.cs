@@ -12,6 +12,7 @@ using System.Linq;
 using Oog.Plugin;
 using Oog.Viewer;
 using SixLabors.ImageSharp.Memory;
+using WinForm = System.Windows.Forms;
 
 namespace Oog {
   public partial class MainForm : Form {
@@ -438,7 +439,7 @@ namespace Oog {
 #endregion
 
     private void thumbnailViewer1_ProgressChanged(object sender, ProgressChangedEventArgs e) {
-      MethodInvoker mi = delegate {
+      WinForm.MethodInvoker mi = delegate {
         ((PercentProgressBar)toolStripProgressBar1.Control).Value = e.ProgressPercentage;
       };
       this.Invoke(mi);
