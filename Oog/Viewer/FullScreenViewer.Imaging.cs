@@ -22,10 +22,10 @@ namespace Oog.Viewer {
     int currentIndex;
     Image lookAheadImage;
 
-    //Ÿ‚ÌƒCƒ[ƒW‚Éi‚ß‚é‚Æ‚«‚ÉÀs‚³‚ê‚é
+    //æ¬¡ã®ã‚¤ãƒ¡ãƒ¼ã‚¸ã«é€²ã‚ã‚‹ã¨ãã«å®Ÿè¡Œã•ã‚Œã‚‹
     MethodInvoker nextImage;
     MethodInvoker prevImage;
-    //æ“Ç‚İ‚ªŠ®—¹‚µ‚½‚Æ‚«‚ÉÀs‚³‚ê‚é
+    //å…ˆèª­ã¿ãŒå®Œäº†ã—ãŸã¨ãã«å®Ÿè¡Œã•ã‚Œã‚‹
     MethodInvoker lookAheadComplete;
 
     public ManualResetEventSlim ThumbnailWorkerBlocker { get; set; }
@@ -36,21 +36,21 @@ namespace Oog.Viewer {
       SetPictureLocation();
 
       if (currentIndex != imageNames.Length-1) {
-        //æ“Ç‚İ’†‚ÉŸ‚Ì‰æ‘œ‚Éi‚ß‚é—v‹‚ª‚ ‚Á‚½ê‡‚Í
-        //æ“Ç‚İŠ®—¹Œã‚·‚®‚É‰æ‘œ‚ğØ‚è‘Ö‚¦‚é
+        //å…ˆèª­ã¿ä¸­ã«æ¬¡ã®ç”»åƒã«é€²ã‚ã‚‹è¦æ±‚ãŒã‚ã£ãŸå ´åˆã¯
+        //å…ˆèª­ã¿å®Œäº†å¾Œã™ãã«ç”»åƒã‚’åˆ‡ã‚Šæ›¿ãˆã‚‹
         nextImage = BookLookAhead;
       }
       if (currentIndex != 0) {
         prevImage = SetPrevImage;
       }
 
-      //æ“Ç‚İ‚ªI—¹‚µ‚½‚±‚Æ‚ğ•\‚·
+      //å…ˆèª­ã¿ãŒçµ‚äº†ã—ãŸã“ã¨ã‚’è¡¨ã™
       lookAheadComplete = ReadyForChange;
 
       LookAhead();
     }
 
-    //Ÿ‚Ì‰æ‘œ‚ğ”ñ“¯Šú‚Åæ“Ç‚İ‚·‚é
+    //æ¬¡ã®ç”»åƒã‚’éåŒæœŸã§å…ˆèª­ã¿ã™ã‚‹
     private void LookAhead() {
       MethodInvoker lookAhead = LookAheadCore;
       if (ThumbnailWorkerBlocker != null) {
@@ -60,7 +60,7 @@ namespace Oog.Viewer {
       System.Threading.Tasks.Task.Factory.StartNew(LookAheadCore);
     }
 
-    //æ“Ç‚İ‚ÌÀ‘•
+    //å…ˆèª­ã¿ã®å®Ÿè£…
     private void LookAheadCore() {
       if (currentIndex != imageNames.Length-1) {
         lookAheadImage = GetImage(currentIndex+1);
@@ -74,13 +74,13 @@ namespace Oog.Viewer {
     }
 
 
-    //æ“Ç‚İŒã‚·‚®‚É‰æ‘œ‚ğØ‚è‘Ö‚¦‚é‚æ‚¤‚É‚·‚é
+    //å…ˆèª­ã¿å¾Œã™ãã«ç”»åƒã‚’åˆ‡ã‚Šæ›¿ãˆã‚‹ã‚ˆã†ã«ã™ã‚‹
     private void BookLookAhead() {
       lookAheadComplete = SetLookAheadAsync;
       prevImage = DoNothing;
     }
 
-    //æ“Ç‚İ‚µ‚½‰æ‘œ‚ÉØ‚è‘Ö‚¦CŒ»İ‚Ì‰æ‘œ‚ğDispose‚·‚é
+    //å…ˆèª­ã¿ã—ãŸç”»åƒã«åˆ‡ã‚Šæ›¿ãˆï¼Œç¾åœ¨ã®ç”»åƒã‚’Disposeã™ã‚‹
     private void SetLookAhead() {
       Image temp = picture.Image;
       picture.Image = lookAheadImage;
@@ -99,15 +99,15 @@ namespace Oog.Viewer {
     }
 
 
-    //•ÊƒXƒŒƒbƒh‚ÌlookAheadComplete‚©‚çSetLookAhead‚ğŒÄ‚Ô
+    //åˆ¥ã‚¹ãƒ¬ãƒƒãƒ‰ã®lookAheadCompleteã‹ã‚‰SetLookAheadã‚’å‘¼ã¶
     private void SetLookAheadAsync() {
       MethodInvoker method = SetLookAhead;
       this.Invoke(method);
     }
 
 
-    //‰æ‘œ‚ği‚ß‚é—v‹‚ª‚ ‚Á‚½ê‡‚É‚·‚Å‚É“Ç‚İ‚İI‚í‚Á‚Ä‚¢‚é
-    //æ“Ç‚İ‰æ‘œ‚ğ‚·‚®‚É“n‚·
+    //ç”»åƒã‚’é€²ã‚ã‚‹è¦æ±‚ãŒã‚ã£ãŸå ´åˆã«ã™ã§ã«èª­ã¿è¾¼ã¿çµ‚ã‚ã£ã¦ã„ã‚‹
+    //å…ˆèª­ã¿ç”»åƒã‚’ã™ãã«æ¸¡ã™
     private void ReadyForChange() {
       nextImage = SetLookAhead;
     }
@@ -127,12 +127,12 @@ namespace Oog.Viewer {
       //SetImage();
     }
 
-    //‰æ‘œ‚ÌˆÊ’u‚ğİ’è‚·‚é
+    //ç”»åƒã®ä½ç½®ã‚’è¨­å®šã™ã‚‹
     private void SetPictureLocation() {
       SetPictureLocation(PictureLocation.RightTop);
     }
 
-    //‰æ‘œ‚ÌˆÊ’u‚ğİ’è‚·‚é
+    //ç”»åƒã®ä½ç½®ã‚’è¨­å®šã™ã‚‹
     private void SetPictureLocation(PictureLocation location) {
       Size screen = Screen.PrimaryScreen.Bounds.Size;
       int x = 0, y = 0;
@@ -150,7 +150,7 @@ namespace Oog.Viewer {
         }
 
         if (picture.Height >= screen.Height) {
-          //c‰¡‹¤‚ÉƒXƒNƒŠ[ƒ“‚æ‚è‘å‚«‚¢
+          //ç¸¦æ¨ªå…±ã«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã‚ˆã‚Šå¤§ãã„
 
           switch (location) {
           case PictureLocation.LeftTop:
@@ -166,7 +166,7 @@ namespace Oog.Viewer {
           scrollPicture = ScrollBoth;
         }
         else {
-          //‰¡•‚Ì‚İƒXƒNƒŠ[ƒ“‚æ‚è‘å‚«‚¢
+          //æ¨ªå¹…ã®ã¿ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã‚ˆã‚Šå¤§ãã„
 
           y = (screen.Height - picture.Height) / 2;
 
@@ -177,7 +177,7 @@ namespace Oog.Viewer {
         x = (screen.Width - picture.Width) / 2;
 
         if (picture.Height >= screen.Height) {
-          //c•‚Ì‚İƒXƒNƒŠ[ƒ“‚æ‚è‘å‚«‚¢
+          //ç¸¦å¹…ã®ã¿ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã‚ˆã‚Šå¤§ãã„
 
           switch (location) {
           case PictureLocation.LeftTop:
@@ -193,7 +193,7 @@ namespace Oog.Viewer {
           scrollPicture = ScrollVirtical;
         }
         else {
-          //c‰¡‹¤‚ÉƒXƒNƒŠ[ƒ“‚æ‚è¬‚³‚¢
+          //ç¸¦æ¨ªå…±ã«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã‚ˆã‚Šå°ã•ã„
 
           y = (screen.Height - picture.Height) / 2;
 

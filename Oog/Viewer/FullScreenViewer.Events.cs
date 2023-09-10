@@ -34,17 +34,17 @@ namespace Oog.Viewer {
         start = GetScreenPoint(sender, e);
         anchor = picture.Location;
 
-        //MouseDownŒãƒ}ƒEƒX‚ª“®‚¢‚½‚çƒXƒNƒ[ƒ‹‚³‚¹‚é
+        //MouseDownå¾Œãƒã‚¦ã‚¹ãŒå‹•ã„ãŸã‚‰ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã•ã›ã‚‹
         onMouseMove = ScrollPictureFirst;
-        //MouseDownŒãƒ}ƒEƒX‚ª“®‚©‚¸‚ÉMouseUp‚³‚ê‚½‚Æ‚«‚ÍA‰æ‘œ‚ğ“ü‚ê‘Ö‚¦‚é
+        //MouseDownå¾Œãƒã‚¦ã‚¹ãŒå‹•ã‹ãšã«MouseUpã•ã‚ŒãŸã¨ãã¯ã€ç”»åƒã‚’å…¥ã‚Œæ›¿ãˆã‚‹
         if (currentIndex != 0) onMouseUp = PrevImage;
       }
       else if (e.Button == MouseButtons.Right) {
         start = GetScreenPoint(sender, e);
-        //ƒ}ƒEƒX‰Eƒ{ƒ^ƒ“‚Å‚ÍƒXƒNƒ[ƒ‹‚³‚¹‚È‚¢
-        //ƒ}ƒEƒX‚ª“®‚¢‚½‚©‚Ç‚¤‚©‚Ìƒ`ƒFƒbƒN‚¾‚¯
+        //ãƒã‚¦ã‚¹å³ãƒœã‚¿ãƒ³ã§ã¯ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã•ã›ãªã„
+        //ãƒã‚¦ã‚¹ãŒå‹•ã„ãŸã‹ã©ã†ã‹ã®ãƒã‚§ãƒƒã‚¯ã ã‘
         onMouseMove = CheckMove;
-        //MouseDownŒãƒ}ƒEƒX‚ª“®‚©‚¸‚ÉMouseUp‚³‚ê‚½‚Æ‚«‚ÍA‰æ‘œ‚ğ“ü‚ê‘Ö‚¦‚é
+        //MouseDownå¾Œãƒã‚¦ã‚¹ãŒå‹•ã‹ãšã«MouseUpã•ã‚ŒãŸã¨ãã¯ã€ç”»åƒã‚’å…¥ã‚Œæ›¿ãˆã‚‹
         if (currentIndex != imageNames.Length-1) onMouseUp = NextImage;
       }
     }
@@ -79,7 +79,7 @@ namespace Oog.Viewer {
       return current;
     }
 
-    //MouseMove‚ğŠ´’m‚µMouseUp‚É‰æ‘œ‚ğ“ü‚ê‘Ö‚¦‚È‚¢‚æ‚¤‚É‚·‚é
+    //MouseMoveã‚’æ„ŸçŸ¥ã—MouseUpæ™‚ã«ç”»åƒã‚’å…¥ã‚Œæ›¿ãˆãªã„ã‚ˆã†ã«ã™ã‚‹
     void ScrollPictureFirst(object sender, MouseEventArgs e) {
       Point current = GetScreenPoint(sender, e);
       Size diff = new Size(current.X - start.X, current.Y - start.Y);
@@ -90,7 +90,7 @@ namespace Oog.Viewer {
       scrollPicture(sender, e);
     }
 
-    //c‰¡—¼•û‚ÉƒXƒNƒ[ƒ‹‚ğ‹–‚·
+    //ç¸¦æ¨ªä¸¡æ–¹ã«ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã‚’è¨±ã™
     void ScrollBoth(object sender, MouseEventArgs e) {
       Point current = GetScreenPoint(sender, e);
       Size diff = new Size(current.X - start.X, current.Y - start.Y);
@@ -119,7 +119,7 @@ namespace Oog.Viewer {
       picture.Location = target;
     }
 
-    //…•½•ûŒü‚É‚¾‚¯ƒXƒNƒ[ƒ‹‚³‚¹‚é
+    //æ°´å¹³æ–¹å‘ã«ã ã‘ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã•ã›ã‚‹
     void ScrollHorizontal(object sender, MouseEventArgs e) {
       Point current = GetScreenPoint(sender, e);
       Size diff = new Size(current.X - start.X, 0);
@@ -140,7 +140,7 @@ namespace Oog.Viewer {
       picture.Location = target;
     }
 
-    //‚’¼•ûŒü‚É‚¾‚¯ƒXƒNƒ[ƒ‹‚³‚¹‚é
+    //å‚ç›´æ–¹å‘ã«ã ã‘ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã•ã›ã‚‹
     void ScrollVirtical(object sender, MouseEventArgs e) {
       Point current = GetScreenPoint(sender, e);
       Size diff = new Size(0, current.Y - start.Y);

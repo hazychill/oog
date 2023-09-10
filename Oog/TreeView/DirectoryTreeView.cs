@@ -134,18 +134,18 @@ namespace Oog {
 
     [StructLayout(LayoutKind.Sequential)]
       private struct WIN32_FIND_DATA {
-      public uint     dwFileAttributes; // ‘®«
-      public FILETIME ftCreateTime; // ì¬“ú
-      public FILETIME ftLastAccessTime; // ÅIƒAƒNƒZƒX“ú
-      public FILETIME ftLastWriteTime; // ÅIXV“ú
-      public uint     nFileSizeHigh; // ƒtƒ@ƒCƒ‹ƒTƒCƒY(ãˆÊ32ƒrƒbƒg)
-      public uint     nFileSizeLow; // ƒtƒ@ƒCƒ‹ƒTƒCƒY(‰ºˆÊ32ƒrƒbƒg)
-      public uint     dwReserved0; // ƒŠƒp[ƒXƒ^ƒO
-      public uint     dwReserved1; // —\–ñ
+      public uint     dwFileAttributes; // å±æ€§
+      public FILETIME ftCreateTime; // ä½œæˆæ—¥æ™‚
+      public FILETIME ftLastAccessTime; // æœ€çµ‚ã‚¢ã‚¯ã‚»ã‚¹æ—¥æ™‚
+      public FILETIME ftLastWriteTime; // æœ€çµ‚æ›´æ–°æ—¥æ™‚
+      public uint     nFileSizeHigh; // ãƒ•ã‚¡ã‚¤ãƒ«ã‚µã‚¤ã‚º(ä¸Šä½32ãƒ“ãƒƒãƒˆ)
+      public uint     nFileSizeLow; // ãƒ•ã‚¡ã‚¤ãƒ«ã‚µã‚¤ã‚º(ä¸‹ä½32ãƒ“ãƒƒãƒˆ)
+      public uint     dwReserved0; // ãƒªãƒ‘ãƒ¼ã‚¹ã‚¿ã‚°
+      public uint     dwReserved1; // äºˆç´„
       [MarshalAs(UnmanagedType.ByValTStr, SizeConst=260)]
-      public string   cFileName; // ƒtƒ@ƒCƒ‹–¼
+      public string   cFileName; // ãƒ•ã‚¡ã‚¤ãƒ«å
       [MarshalAs(UnmanagedType.ByValTStr, SizeConst=14)]
-      public string   cAlternateFileName; // 8.3Œ`®‚Ìƒtƒ@ƒCƒ‹–¼
+      public string   cAlternateFileName; // 8.3å½¢å¼ã®ãƒ•ã‚¡ã‚¤ãƒ«å
     }
 
     [StructLayout(LayoutKind.Sequential)]
