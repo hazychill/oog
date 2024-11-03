@@ -223,7 +223,8 @@ namespace Oog.Viewer {
           string ext = Path.GetExtension(name).ToLower();
           IImageCreator creator = OogUtil.GetImageCreatorForName(imageCreators, name);
 
-          using (Image original = creator.GetImage(data)) {
+          using (Image originalRaw = creator.GetImage(data))
+          using (var original = new Bitmap(originalRaw)) {
             foreach (var propid in original.PropertyIdList) {
               original.RemovePropertyItem(propid);
             }
