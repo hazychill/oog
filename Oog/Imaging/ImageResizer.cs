@@ -159,10 +159,10 @@ namespace Oog {
         return original;
       }
       else {
-        using (var imshImage = GetImageSharpImage(original)) {
+        using (var imshImage = OogUtil.GetImageSharpImage(original)) {
           IResampler resampler = SelectResampler(interpolationMode);
           imshImage.Mutate(x => x.Resize(changedSize.Width, changedSize.Height, resampler));
-          using (var resizedImage = GetImageFromSharpImage(imshImage)) {
+          using (var resizedImage = OogUtil.GetImageFromSharpImage(imshImage)) {
             return new Bitmap(resizedImage);
           }
         }
@@ -186,31 +186,13 @@ namespace Oog {
         return original;
       }
       else {
-        using (var imshImage = GetImageSharpImage(original)) {
+        using (var imshImage = OogUtil.GetImageSharpImage(original)) {
           imshImage.Mutate(x => x.Resize(changedSize.Width, changedSize.Height, resampler));
-          using (var resizedImage = GetImageFromSharpImage(imshImage)) {
+          using (var resizedImage = OogUtil.GetImageFromSharpImage(imshImage)) {
             return new Bitmap(resizedImage);
           }
         }
       }
-    }
-
-    private static Image GetImageFromSharpImage(ImageSharp.Image imshImage) {
-      using (var ms = new MemoryStream()) {
-        imshImage.SaveAsJpeg(ms);
-        ms.Flush();
-        ms.Seek(0, SeekOrigin.Begin);
-        return Image.FromStream(ms);
-      }
-    }
-
-    private static ImageSharp.Image GetImageSharpImage(Image image) {
-        using (MemoryStream origStream = new MemoryStream()) {
-          image.Save(origStream, ImageFormat.Jpeg);
-          origStream.Flush();
-          origStream.Seek(0, SeekOrigin.Begin);
-          return ImageSharp.Image.Load(origStream);
-        }
     }
 
     [Obsolete("use Resize(Image, Size, Resizer, IResampler, bool) instead")]
@@ -218,10 +200,10 @@ namespace Oog {
       if (rotate) {
         Size changedSize = resizer(new Size(original.Height, original.Width), target);
 
-        using (var imshImage = GetImageSharpImage(original)) {
+        using (var imshImage = OogUtil.GetImageSharpImage(original)) {
           IResampler resampler = SelectResampler(interpolationMode);
           imshImage.Mutate(x => x.Rotate(RotateMode.Rotate90).Resize(changedSize.Width, changedSize.Height, resampler));
-          using (var resizedImage = GetImageFromSharpImage(imshImage)) {
+          using (var resizedImage = OogUtil.GetImageFromSharpImage(imshImage)) {
             return new Bitmap(resizedImage);
           }
         }
@@ -234,10 +216,10 @@ namespace Oog {
           return original;
         }
         else {
-          using (var imshImage = GetImageSharpImage(original)) {
+          using (var imshImage = OogUtil.GetImageSharpImage(original)) {
             IResampler resampler = SelectResampler(interpolationMode);
             imshImage.Mutate(x => x.Resize(changedSize.Width, changedSize.Height, resampler));
-            using (var resizedImage = GetImageFromSharpImage(imshImage)) {
+            using (var resizedImage = OogUtil.GetImageFromSharpImage(imshImage)) {
               return new Bitmap(resizedImage);
             }
           }
@@ -249,9 +231,9 @@ namespace Oog {
       if (rotate) {
         Size changedSize = resizer(new Size(original.Height, original.Width), target);
 
-        using (var imshImage = GetImageSharpImage(original)) {
+        using (var imshImage = OogUtil.GetImageSharpImage(original)) {
           imshImage.Mutate(x => x.Rotate(RotateMode.Rotate90).Resize(changedSize.Width, changedSize.Height, resampler));
-          using (var resizedImage = GetImageFromSharpImage(imshImage)) {
+          using (var resizedImage = OogUtil.GetImageFromSharpImage(imshImage)) {
             return new Bitmap(resizedImage);
           }
         }
@@ -264,9 +246,9 @@ namespace Oog {
           return original;
         }
         else {
-          using (var imshImage = GetImageSharpImage(original)) {
+          using (var imshImage = OogUtil.GetImageSharpImage(original)) {
             imshImage.Mutate(x => x.Resize(changedSize.Width, changedSize.Height, resampler));
-            using (var resizedImage = GetImageFromSharpImage(imshImage)) {
+            using (var resizedImage = OogUtil.GetImageFromSharpImage(imshImage)) {
               return new Bitmap(resizedImage);
             }
           }
