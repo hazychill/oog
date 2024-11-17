@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Windows.Forms;
 using Oog.Plugin;
 using System.IO;
-using System.Reflection;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Linq;
+using System.Diagnostics;
 
 namespace Oog {
   class DirectoryTreeView : TreeView {
@@ -94,64 +93,26 @@ namespace Oog {
 
     static readonly IntPtr INVALID_HANDLE_VALUE = new IntPtr(-1);
 
-    [DllImport("Kernel32")]
-    static extern IntPtr FindFirstFile(string lpFileName, [In, Out] ref WIN32_FIND_DATA lpFindFileData);
-
-    [DllImport("Kernel32")]
-    static extern int FindNextFile(IntPtr hFindFile, [In, Out] ref WIN32_FIND_DATA lpFindFileData);
-
-    [DllImport("Kernel32")]
-    static extern int FindClose(IntPtr hFindFile);
-
     private IEnumerable<string>GetFiles(string dir) {
-      WIN32_FIND_DATA findFileData = new WIN32_FIND_DATA();
-      IntPtr h = FindFirstFile(dir, ref findFileData);
-      if (h == INVALID_HANDLE_VALUE) {
+      var dirPath = Path.GetDirectoryName(dir);
+      var findPattern = Path.GetFileName(dir);
+      if (Directory.Exists(dirPath)) {
+        IEnumerable<FileSystemInfo> fsiQuery;
+        try {
+          fsiQuery = new DirectoryInfo(dirPath).EnumerateFileSystemInfos(findPattern, SearchOption.TopDirectoryOnly);
+        }
+        catch (System.Exception e) {
+          Debug.WriteLine(e);
+          yield break;
+        }
+          var query = fsiQuery.Select(x => ((x.Attributes & FileAttributes.Directory) == 0) ? (x.FullName) : ($"{x.FullName}{Path.DirectorySeparatorChar}"));
+          foreach (var x in query) {
+            yield return x;
+          }
+      }
+      else {
         yield break;
       }
-      try {
-        do {
-          if (findFileData.cFileName == "." || findFileData.cFileName == "..") {
-            continue;
-          }
-          if ((findFileData.dwFileAttributes & 0x00000010u) == 0) {
-            yield return findFileData.cFileName;
-          }
-          else {
-            yield return string.Concat(findFileData.cFileName, "\\");
-          }
-        } while (FindNextFile(h, ref findFileData) != 0);
-      }
-      finally {
-        if (h.ToInt64() > 0) {
-          int ret = FindClose(h);
-          if (ret == 0) {
-            throw new Exception();
-          }
-        }
-      }
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-      private struct WIN32_FIND_DATA {
-      public uint     dwFileAttributes; // 属性
-      public FILETIME ftCreateTime; // 作成日時
-      public FILETIME ftLastAccessTime; // 最終アクセス日時
-      public FILETIME ftLastWriteTime; // 最終更新日時
-      public uint     nFileSizeHigh; // ファイルサイズ(上位32ビット)
-      public uint     nFileSizeLow; // ファイルサイズ(下位32ビット)
-      public uint     dwReserved0; // リパースタグ
-      public uint     dwReserved1; // 予約
-      [MarshalAs(UnmanagedType.ByValTStr, SizeConst=260)]
-      public string   cFileName; // ファイル名
-      [MarshalAs(UnmanagedType.ByValTStr, SizeConst=14)]
-      public string   cAlternateFileName; // 8.3形式のファイル名
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-      public struct FILETIME {
-      public uint dwLowDateTime;
-      public uint dwHighDateTime;
     }
 
     static readonly object findObj = new object();
