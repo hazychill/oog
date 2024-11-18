@@ -4,9 +4,10 @@ using System.Text.RegularExpressions;
 using System.IO;
 using System.Linq;
 using Oog.Plugin;
-using System.Drawing;
-using SixLabors.ImageSharp;
+using GDI = System.Drawing;
+using ImageSharp = SixLabors.ImageSharp;
 using System.Drawing.Imaging;
+using SixLabors.ImageSharp;
 
 namespace Oog {
     public class OogUtil {
@@ -58,22 +59,27 @@ namespace Oog {
             return creator;
         }
 
-        public static System.Drawing.Image GetImageFromSharpImage(SixLabors.ImageSharp.Image imshImage) {
+        public static GDI.Image GetImageFromSharpImage(ImageSharp.Image imshImage) {
             using (var ms = new MemoryStream()) {
+                // imshImage.SaveAsPng(ms);
                 imshImage.SaveAsJpeg(ms);
                 ms.Flush();
                 ms.Seek(0, SeekOrigin.Begin);
-                return System.Drawing.Image.FromStream(ms);
+                return GDI.Image.FromStream(ms);
             }
         }
 
-        public static SixLabors.ImageSharp.Image GetImageSharpImage(System.Drawing.Image image) {
+        public static ImageSharp.Image GetImageSharpImage(GDI.Image image) {
             using (MemoryStream origStream = new MemoryStream()) {
                 image.Save(origStream, ImageFormat.Jpeg);
                 origStream.Flush();
                 origStream.Seek(0, SeekOrigin.Begin);
-                return SixLabors.ImageSharp.Image.Load(origStream);
+                return ImageSharp.Image.Load(origStream);
             }
+        }
+
+        public static ImageSharp.Size ImageSharpSize(GDI.Size gdiSize) {
+            return new ImageSharp.Size(gdiSize.Width, gdiSize.Height);
         }
     }
 }

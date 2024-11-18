@@ -1,10 +1,10 @@
 using System;
-using System.Drawing;
 using System.IO;
+using ImageSharp = SixLabors.ImageSharp;
 
 namespace Oog.Plugin {
     public interface IImageCreator {
-        Image GetImage(Stream data);
+        ImageSharp.Image GetImage(Stream data);
         string[] SupportedExtensions { get;}
     }
 }

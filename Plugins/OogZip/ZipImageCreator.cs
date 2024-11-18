@@ -4,6 +4,8 @@ using System.IO;
 using System.Text.RegularExpressions;
 using ICSharpCode.SharpZipLib.Zip;
 using System.Diagnostics;
+using ImageSharp = SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
 
 namespace Oog.Plugin {
   public class ZipImageCreator : IImageCreator {
@@ -16,7 +18,7 @@ namespace Oog.Plugin {
       // Debug.AutoFlush = true;
     }
 
-    public Image GetImage(Stream data) {
+    public ImageSharp.Image GetImage(Stream data) {
       ZipFile zip = null;
       try {
         if (data.CanSeek == false){
@@ -28,9 +30,8 @@ namespace Oog.Plugin {
         foreach (ZipEntry entry in zip ) {
           if (IsImageEntry(entry)) {
             try {
-              using (Stream input = zip.GetInputStream(entry))
-              using (Image original = Image.FromStream(input)) {
-                return new Bitmap(original);
+              using (Stream input = zip.GetInputStream(entry)) {
+                return ImageSharp.Image.Load(input);
               }
             }
             catch (ZipException e) {
@@ -61,12 +62,10 @@ namespace Oog.Plugin {
       }
     }
 
-    private Image GetDefaultImage() {
-      Image img = new Bitmap(50, 50);
-      using (Graphics g = Graphics.FromImage(img)) {
-        g.Clear(Color.Silver);
-      }
-      return img;
+    private ImageSharp.Image GetDefaultImage() {
+      var image = new ImageSharp.Image<ImageSharp.PixelFormats.Argb32>(50, 50);
+      image.Mutate(c => c.BackgroundColor(ImageSharp.Color.Silver));
+      return image;
     }
 
     static Regex imageExtRegex = new Regex("\\.(?i:jpe?g|gif|png|bmp)$");

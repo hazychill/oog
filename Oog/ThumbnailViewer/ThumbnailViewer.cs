@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using System.Drawing;
 using System.Drawing.Drawing2D;
 using Oog.Plugin;
 using System.IO;
@@ -13,6 +12,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Collections.Concurrent;
+using ImageSharp = SixLabors.ImageSharp;
+using GDI = System.Drawing;
+using SixLabors.ImageSharp.Processing;
 
 namespace Oog {
   public class ThumbnailViewer : ScrollableControl {
@@ -23,7 +25,7 @@ namespace Oog {
 
     private Thumbnail[] thumbnails;
     private int rows, cols;
-    private Size cellSize;
+    private GDI.Size cellSize;
     private ThumbnailSettings thumbnailSettings;
 
     private IExtractor extractor;
@@ -43,7 +45,7 @@ namespace Oog {
 
       InitializeWorker();
 
-      BackColor = SystemColors.Window;
+      BackColor = GDI.SystemColors.Window;
       thumbnails = new Thumbnail[0];
 
       thumbnailSettings = ThumbnailSettings.Default;
@@ -116,13 +118,13 @@ namespace Oog {
       int rowStart = rectTop / cellSize.Height; ;
       int rowEnd = (rectTop+e.ClipRectangle.Height) / cellSize.Height;
 
-      Graphics g = e.Graphics;
+      GDI.Graphics g = e.Graphics;
             for (int row = rowStart; row <= rowEnd; row++) {
         for (int col = 0; col < cols; col++) {
           int index = cols*row + col;
           if (0<=index && index < thumbnails.Length) {
-            Point cellLocation = new Point(col*cellSize.Width, row*cellSize.Height+this.AutoScrollPosition.Y);
-            Rectangle cellRect = new Rectangle(cellLocation, cellSize);
+            GDI.Point cellLocation = new GDI.Point(col*cellSize.Width, row*cellSize.Height+this.AutoScrollPosition.Y);
+            GDI.Rectangle cellRect = new GDI.Rectangle(cellLocation, cellSize);
             thumbnails[index].DrawThumbnail(g, cellRect);
           }
         }
@@ -145,9 +147,9 @@ namespace Oog {
       }
       rows = (thumbnails.Length-1) / cols + 1;
 
-      cellSize = new Size(this.ClientSize.Width/cols, thumbnailSettings.Size.Height);
+      cellSize = new GDI.Size(this.ClientSize.Width/cols, thumbnailSettings.Size.Height);
 
-      this.AutoScrollMinSize = new Size(cols*cellSize.Width, rows*cellSize.Height);
+      this.AutoScrollMinSize = new GDI.Size(cols*cellSize.Width, rows*cellSize.Height);
     }
 
     public void SetThumbnails(IExtractor extractor, Dictionary<string, IImageCreator> imageCreators, string[] names) {
@@ -378,20 +380,23 @@ namespace Oog {
         string ext = Path.GetExtension(name).ToLower();
         IImageCreator creator = OogUtil.GetImageCreatorForName(imageCreators, name);
 
-        using (Image originalRaw = creator.GetImage(data))
-        using (var original = new Bitmap(originalRaw)) {
-          foreach (var propid in original.PropertyIdList) {
-            original.RemovePropertyItem(propid);
-          }
-
-          if (original == null) {
+        using (ImageSharp.Image originalRaw = creator.GetImage(data)) {
+          if (originalRaw == null) {
             thumbnail.SetImage(null);
             return;
           }
 
-          Image resized = ImageResizer.Resize(original, thumbnailSettings.Size, ImageResizer.ShrinkHoldingRatio, thumbnailSettings.Resampler);
-          if (resized == original) resized = new Bitmap(original);
-          thumbnail.SetImage(resized);
+          ImageSharp.Image resized = ImageResizer.Resize(originalRaw, OogUtil.ImageSharpSize(thumbnailSettings.Size), ImageResizer.ShrinkHoldingRatio, thumbnailSettings.Resampler);
+          var actuallyResized = resized == originalRaw;
+          try {
+            var gdiImage = OogUtil.GetImageFromSharpImage(resized);
+            thumbnail.SetImage(gdiImage);
+          }
+          finally {
+            if (actuallyResized) {
+              resized.Dispose();
+            }
+          }
 
           if (!imageCreateWorker.CancellationPending) DrawThumbnail(index);
         }
@@ -486,7 +491,7 @@ namespace Oog {
       if (top > max) {
         top = max;
       }
-      this.AutoScrollPosition = new Point(0, top);
+      this.AutoScrollPosition = new GDI.Point(0, top);
     }
 
 #endregion
@@ -614,7 +619,7 @@ namespace Oog {
 #endregion
 
     private void DrawThumbnail(int index) {
-      Rectangle rect = new Rectangle(
+      GDI.Rectangle rect = new GDI.Rectangle(
         (index % cols) * cellSize.Width,
         (index / cols) * cellSize.Height + this.AutoScrollPosition.Y,
         cellSize.Width,
@@ -626,10 +631,10 @@ namespace Oog {
       if (index<0 || thumbnails.Length<=index) return;
       int row = index / cols;
       if (this.AutoScrollPosition.Y + row*cellSize.Height < 0) {
-        this.AutoScrollPosition = new Point(0, row*cellSize.Height);
+        this.AutoScrollPosition = new GDI.Point(0, row*cellSize.Height);
       }
       else if (this.AutoScrollPosition.Y + (row+1)*cellSize.Height > this.Height) {
-        this.AutoScrollPosition = new Point(0, row*cellSize.Height - this.Height + cellSize.Height);
+        this.AutoScrollPosition = new GDI.Point(0, row*cellSize.Height - this.Height + cellSize.Height);
       }
     }
 

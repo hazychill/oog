@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Processing.Processors.Transforms;
+using ImageSharp = SixLabors.ImageSharp;
 
 namespace Oog.Viewer {
   partial class FullScreenViewer {
@@ -376,10 +377,10 @@ namespace Oog.Viewer {
       settings.Save();
 
       if (picture.Image != null) {
-        Size size = picture.Image.Size;
-        Size originalSize;
+        var size = OogUtil.ImageSharpSize(picture.Image.Size);
+        ImageSharp.Size originalSize;
         if (originalSizes.TryGetValue(currentIndex, out originalSize)) {
-          if (resizer(originalSize, this.Size) == size) {
+          if (resizer(originalSize, OogUtil.ImageSharpSize(this.Size)) == size) {
             return;
           }
         }

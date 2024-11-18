@@ -9,6 +9,10 @@ using Oog.Plugin;
 using System.IO;
 using System.Threading;
 using SixLabors.ImageSharp.Processing.Processors.Transforms;
+using ImageSharp = SixLabors.ImageSharp;
+using System.Diagnostics;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Drawing.Processing;
 
 namespace Oog.Viewer {
   partial class FullScreenViewer {
@@ -211,7 +215,7 @@ namespace Oog.Viewer {
       RightBottom
     }
 
-    Dictionary<int, Size> originalSizes = new Dictionary<int, Size>();
+    Dictionary<int, ImageSharp.Size> originalSizes = new Dictionary<int, ImageSharp.Size>();
 
     private Image GetImage(int index) {
       try {
@@ -223,25 +227,27 @@ namespace Oog.Viewer {
           string ext = Path.GetExtension(name).ToLower();
           IImageCreator creator = OogUtil.GetImageCreatorForName(imageCreators, name);
 
-          using (Image originalRaw = creator.GetImage(data))
-          using (var original = new Bitmap(originalRaw)) {
-            foreach (var propid in original.PropertyIdList) {
-              original.RemovePropertyItem(propid);
-            }
+          using (var original = creator.GetImage(data)) {
             if (original == null) return CreateErrorImage();
-          
+
             originalSizes[index] = original.Size;
 
-            Image resized = ImageResizer.Resize(original, Screen.PrimaryScreen.Bounds.Size, settings.Resizer, settings.Resampler, menuRotate.Checked);
-            if (resized == original) resized = new Bitmap(original);
-            if (this.Height < resized.Height) {
-              using (Graphics g  = Graphics.FromImage(resized)) {
-                using (Pen pen = new Pen(Color.Red, 2)) {
-                  g.DrawLine(pen, 0, resized.Height-1, resized.Width, resized.Height-1);
-                }
+            var resized = ImageResizer.Resize(original, OogUtil.ImageSharpSize(Screen.PrimaryScreen.Bounds.Size), settings.Resizer, settings.Resampler, menuRotate.Checked);
+            var actuallyResized = resized == original;
+            try {
+              if (this.Height < resized.Height) {
+                resized.Mutate(c => c.DrawLine(ImageSharp.Color.Red, 2f, [
+                  new ImageSharp.PointF(0, resized.Height-1),
+                  new ImageSharp.PointF(resized.Width, resized.Height-1),
+                ]));
+              }
+              return OogUtil.GetImageFromSharpImage(resized);
+            }
+            finally {
+              if (actuallyResized) {
+                resized.Dispose();
               }
             }
-            return resized;
           }
         }
       }
@@ -251,6 +257,7 @@ namespace Oog.Viewer {
         }
       }
     }
+
     public Image CreateErrorImage() {
       return new Bitmap(errorImage);
     }

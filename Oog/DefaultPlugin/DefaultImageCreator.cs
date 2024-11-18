@@ -1,16 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Drawing;
 using System.IO;
+using ImageSharp = SixLabors.ImageSharp;
 
 namespace Oog.Plugin {
   public class DefaultImageCreator : IImageCreator {
 #region IImageCreator Members
 
-    public Image GetImage(Stream data) {
+    public ImageSharp.Image GetImage(Stream data) {
       try {
-        return Image.FromStream(data);
+        return ImageSharp.Image.Load(data);
         //Image original = Image.FromStream(data);
         //Bitmap bmp = new Bitmap(original);
         //original.Dispose();
