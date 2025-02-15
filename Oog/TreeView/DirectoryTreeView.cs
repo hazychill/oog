@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Linq;
 using System.Diagnostics;
+using System.ComponentModel;
 
 namespace Oog {
   class DirectoryTreeView : TreeView {
@@ -17,6 +18,7 @@ namespace Oog {
 
     private bool resetNodeRequired;
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public bool ResetNodeRequired {
       get { return resetNodeRequired; }
       set { resetNodeRequired = value; }
@@ -27,6 +29,7 @@ namespace Oog {
     }
 
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public Dictionary<string, IExtractorFactory> ExtractorFactories {
       get { return extractorFactories; }
       set { extractorFactories = value; }

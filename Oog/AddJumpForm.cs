@@ -1,6 +1,7 @@
 using System;
 using System.Windows.Forms;
 using System.Drawing;
+using System.ComponentModel;
 
 namespace Oog {
   public class AddJumpForm : Form {
@@ -88,11 +89,13 @@ namespace Oog {
       this.PerformLayout();
     }
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public string ItemName {
       get { return nameTextBox.Text; }
       set { nameTextBox.Text = value; }
     }
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public string ItemPath {
       get { return pathTextBox.Text; }
       set { pathTextBox.Text = value; }

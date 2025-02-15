@@ -2,6 +2,7 @@ using System;
 using System.Windows.Forms;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.ComponentModel;
 
 namespace Oog {
   public class PercentProgressBar : Control {
@@ -87,6 +88,7 @@ namespace Oog {
 
     }
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public int Maximum {
       get { return max; }
       set {
@@ -95,6 +97,8 @@ namespace Oog {
         this.Invalidate();
       }
     }
+
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public int Minimum {
       get { return min; }
       set { min = value;
@@ -102,6 +106,8 @@ namespace Oog {
         this.Invalidate();
       }
     }
+
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public int Value {
       get { return val; }
       set {

@@ -13,6 +13,7 @@ using ImageSharp = SixLabors.ImageSharp;
 using System.Diagnostics;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Drawing.Processing;
+using System.ComponentModel;
 
 namespace Oog.Viewer {
   partial class FullScreenViewer {
@@ -32,6 +33,7 @@ namespace Oog.Viewer {
     //先読みが完了したときに実行される
     MethodInvoker lookAheadComplete;
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public ManualResetEventSlim ThumbnailWorkerBlocker { get; set; }
 
     private void SetImage() {
@@ -275,11 +277,13 @@ namespace Oog.Viewer {
 
     private void DoNothing() { }
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public IResampler Resampler {
       get { return settings.Resampler; }
       set { settings.Resampler = value; }
     }
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public Resizer Resizer {
       get { return settings.Resizer; }
       set { settings.Resizer = value; }

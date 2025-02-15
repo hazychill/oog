@@ -1,6 +1,7 @@
 using System;
 using System.Windows.Forms;
 using System.Drawing;
+using System.ComponentModel;
 
 namespace Oog {
   public class SettingsForm : Form {
@@ -67,6 +68,7 @@ namespace Oog {
     }
 
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public OogSettings Settings {
       get { return settings; }
       set {
