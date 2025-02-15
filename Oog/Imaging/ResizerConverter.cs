@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Drawing;
 using System.Globalization;
 using System.Collections.Generic;
+using ImageSharp = SixLabors.ImageSharp;
 
 namespace Oog {
   public class ResizerConverter : TypeConverter {
@@ -24,9 +25,9 @@ namespace Oog {
       if (name == null) throw new NotSupportedException();
 
       Type t = typeof(ImageResizer);
-      MethodInfo method = t.GetMethod(name, new Type[]{ typeof(Size), typeof(Size) });
+      MethodInfo method = t.GetMethod(name, new Type[]{ typeof(ImageSharp.Size), typeof(ImageSharp.Size) });
       if (method == null) throw new NotSupportedException();
-      if (method.ReturnType != typeof(Size)) throw new NotSupportedException();
+      if (method.ReturnType != typeof(ImageSharp.Size)) throw new NotSupportedException();
 
       return Delegate.CreateDelegate(typeof(Resizer), method);
     }
@@ -44,9 +45,9 @@ namespace Oog {
       if (name == null) return false;
 
       Type t = typeof(ImageResizer);
-      MethodInfo method = t.GetMethod(name, new Type[]{ typeof(Size), typeof(Size) });
+      MethodInfo method = t.GetMethod(name, new Type[]{ typeof(ImageSharp.Size), typeof(ImageSharp.Size) });
       if (method == null) return false;
-      if (method.ReturnType != typeof(Size)) return false;
+      if (method.ReturnType != typeof(ImageSharp.Size)) return false;
 
       return true;
     }
@@ -59,12 +60,12 @@ namespace Oog {
         return x.Name.CompareTo(y.Name);
       });
       foreach (MethodInfo method in methods) {
-        if (method.ReturnType != typeof(Size)) continue;
+        if (method.ReturnType != typeof(ImageSharp.Size)) continue;
 
         ParameterInfo[] parameters = method.GetParameters();
         if (parameters.Length != 2) continue;
-        if (parameters[0].ParameterType != typeof(Size)) continue;
-        if (parameters[1].ParameterType != typeof(Size)) continue;
+        if (parameters[0].ParameterType != typeof(ImageSharp.Size)) continue;
+        if (parameters[1].ParameterType != typeof(ImageSharp.Size)) continue;
 
         resizers.Add(Delegate.CreateDelegate(typeof(Resizer), method) as Resizer);
       }
