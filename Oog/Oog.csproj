@@ -15,6 +15,7 @@
     <TargetFramework>net9.0-windows</TargetFramework>
     <!-- <Nullable>enable</Nullable> -->
     <UseWindowsForms>true</UseWindowsForms>
+    <SelfContained>true</SelfContained>
   </PropertyGroup>
 
 </Project>
